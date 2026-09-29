@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outfix - Find Skilled Workers On Demand</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c5aa0;
+            --secondary: #ff7b00;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --code-bg: #1a2c4f;
+            --ai-purple: #6c5ce7;
+            --ai-gradient: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        }
+
+        body {
+            color: var(--dark);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e3f73;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e06a00;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-ai {
+            background: var(--ai-gradient);
+            color: white;
+        }
+
+        .btn-ai:hover {
+            background: linear-gradient(135deg, #5b4bc4 0%, #8f88e0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(44, 90, 160, 0.8), rgba(44, 90, 160, 0.9)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 150px 0;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .search-box button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .search-box button:hover {
+            background-color: #e06a00;
+        }
+
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            padding: 30px 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(44, 90, 160, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .service-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .service-card p {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            background-color: var(--light);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .step h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 650px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            z-index: 10;
+        }
+
+        .job-form {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+        }
+
+        .file-upload i {
+            font-size: 2rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .preview-container {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .preview-container img, .preview-container video {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+        }
+
+        .location-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .location-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .location-option.active {
+            border-color: var(--primary);
+            background-color: rgba(44, 90, 160, 0.05);
+        }
+
+        .location-option i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        /* ==================== AI ASSISTANT ==================== */
+        .ai-assist-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--ai-gradient);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(108, 92, 231, 0.3);
+        }
+
+        .ai-assist-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.5);
+        }
+
+        .ai-assist-btn i {
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.2) rotate(15deg); opacity: 0.8; }
+        }
+
+        .ai-panel {
+            display: none;
+            background: linear-gradient(135deg, #f8f7ff 0%, #e8e5ff 100%);
+            border: 2px solid var(--ai-purple);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            animation: slideDown 0.3s ease;
+        }
+
+        .ai-panel.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .ai-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--ai-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(108, 92, 231, 0.4);
+        }
+
+        .ai-panel-header-text h4 {
+            color: var(--ai-purple);
+            margin-bottom: 2px;
+            font-size: 1.05rem;
+        }
+
+        .ai-panel-header-text p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .ai-close-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .ai-close-btn:hover {
+            color: var(--ai-purple);
+        }
+
+        .ai-conversation {
+            max-height: 350px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 5px;
+        }
+
+        .ai-message {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .ai-message-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .ai-message.assistant .ai-message-bubble {
+            background: white;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            color: var(--dark);
+            border-top-left-radius: 4px;
+        }
+
+        .ai-message.user .ai-message-bubble {
+            background: var(--ai-purple);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        .ai-message-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .ai-message.assistant .ai-message-icon {
+            background: var(--ai-gradient);
+            color: white;
+        }
+
+        .ai-message.user .ai-message-icon {
+            background: var(--gray);
+            color: white;
+        }
+
+        .ai-quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .ai-quick-reply {
+            background: white;
+            border: 1.5px solid var(--ai-purple);
+            color: var(--ai-purple);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .ai-quick-reply:hover {
+            background: var(--ai-purple);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .ai-input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1.5px solid rgba(108, 92, 231, 0.3);
+            border-radius: 25px;
+            outline: none;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .ai-input:focus {
+            border-color: var(--ai-purple);
+        }
+
+        .ai-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--ai-gradient);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .ai-send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-typing {
+            display: flex;
+            gap: 4px;
+            padding: 12px 18px;
+            background: white;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            border-radius: 15px;
+            border-top-left-radius: 4px;
+            width: fit-content;
+        }
+
+        .ai-typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--ai-purple);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        .ai-suggestion-box {
+            background: white;
+            border-left: 4px solid var(--ai-purple);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .ai-suggestion-box h5 {
+            color: var(--ai-purple);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .ai-suggestion-box .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        /* Shared Code Display */
+        .shared-code-box {
+            background: linear-gradient(135deg, var(--code-bg) 0%, #2c5aa0 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .shared-code-box h3 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .shared-code {
+            font-family: 'Courier New', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            color: var(--secondary);
+            text-shadow: 0 0 20px rgba(255, 123, 0, 0.5);
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .shared-code-hint {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-top: 10px;
+        }
+
+        .code-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .code-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        /* Waitlist Banner */
+        .waitlist-banner {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: var(--dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+            animation: slideDown 0.5s ease;
+        }
+
+        .waitlist-banner i {
+            font-size: 2.5rem;
+        }
+
+        .waitlist-banner-content h4 {
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .waitlist-banner-content p {
+            font-size: 0.95rem;
+        }
+
+        /* Worker Search Timer */
+        .searching-timer {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(44, 90, 160, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(44, 90, 160, 0); }
+        }
+
+        .searching-timer h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .searching-timer p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .searching-timer .timer-countdown {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .searching-timer .timer-note {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Workers Section */
+        .workers-slider {
+            display: flex;
+            overflow-x: auto;
+            gap: 30px;
+            padding: 20px 0;
+            scrollbar-width: thin;
+        }
+
+        .worker-card {
+            min-width: 280px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .worker-img {
+            height: 200px;
+            background-color: #ddd;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .worker-info {
+            padding: 20px;
+        }
+
+        .worker-info h3 {
+            margin-bottom: 5px;
+        }
+
+        .worker-specialty {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .worker-rating {
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+
+        .worker-price {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* Job Listings */
+        .job-listings {
+            display: none;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .job-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .job-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .job-status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .job-status.searching {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .job-status.accepted {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .job-status.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .job-status.waitlisted {
+            background-color: #ffeaa7;
+            color: #856404;
+        }
+
+        .job-details {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .job-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--gray);
+        }
+
+        .job-description {
+            margin-bottom: 15px;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .job-timer {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+
+        .assigned-worker {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .assigned-worker-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid var(--primary);
+        }
+
+        .assigned-worker-info h4 {
+            margin-bottom: 3px;
+            color: var(--primary);
+        }
+
+        .assigned-worker-info p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Become a Member Section */
+        .become-member {
+            background-color: var(--light);
+        }
+
+        .member-form {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .certification-requirements {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* App Download Section */
+        .app-download {
+            background: linear-gradient(to right, var(--primary), #3a6dc2);
+            color: white;
+            text-align: center;
+        }
+
+        .app-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .app-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .app-content p {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .app-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .app-btn {
+            display: flex;
+            align-items: center;
+            background: white;
+            color: var(--dark);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .app-btn i {
+            font-size: 2rem;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .app-btn span {
+            font-size: 0.8rem;
+            display: block;
+            font-weight: 400;
+        }
+
+        .app-btn strong {
+            font-size: 1.1rem;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .notification-content h4 {
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .notification-content p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--gray);
+            flex-shrink: 0;
+        }
+
+        /* Tabs */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a2c4f;
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--secondary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #b0b7c3;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: var(--secondary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b0b7c3;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero h1 { font-size: 2.8rem; }
+            .steps { flex-direction: column; align-items: center; }
+            .step { max-width: 400px; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .auth-buttons { display: none; }
+            .mobile-menu { display: block; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .section-title h2 { font-size: 2rem; }
+            .search-box { flex-direction: column; border-radius: 8px; }
+            .search-box input { padding: 15px; }
+            .search-box button { border-radius: 0 0 8px 8px; }
+            .form-row { flex-direction: column; gap: 0; }
+            .job-header { flex-direction: column; gap: 10px; }
+            .location-options { flex-direction: column; }
+            .shared-code { font-size: 1.8rem; letter-spacing: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-tools"></i>
+                    Outfix
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#" class="tab-link" data-tab="home">Home</a></li>
+                    <li><a href="#" class="tab-link" data-tab="post-job">Post a Job</a></li>
+                    <li><a href="#" class="tab-link" data-tab="jobs">My Jobs</a></li>
+                    <li><a href="#" class="tab-link" data-tab="verify">Verify Worker</a></li>
+                    <li><a href="#" class="tab-link" data-tab="become-member">Become a Worker</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="#" class="btn btn-outline">Log In</a>
+                    <a href="#" class="btn btn-primary">Sign Up</a>
+                </div>
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Notification -->
+    <div class="notification">
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+        </div>
+        <div class="notification-content">
+            <h4>New Job Available</h4>
+            <p>A client needs an electrician within 5 miles of your location.</p>
+        </div>
+        <button class="notification-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Job Posting Modal -->
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 style="margin-bottom: 20px; color: var(--primary);">Post a Job</h2>
+            <form id="jobForm" class="job-form">
+                <div class="form-group">
+                    <label for="jobTitle">Job Title</label>
+                    <input type="text" id="jobTitle" class="form-control" placeholder="e.g., Fix leaking kitchen faucet" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="serviceType">Service Type</label>
+                    <select id="serviceType" class="form-control" required>
+                        <option value="">Select a service</option>
+                        <option value="electrician">Electrician</option>
+                        <option value="plumber">Plumber</option>
+                        <option value="painter">Painter</option>
+                        <option value="mason">Mason</option>
+                        <option value="landscaper">Landscaper/Gardener</option>
+                        <option value="welder">Welder</option>
+                        <option value="carpenter">Carpenter</option>
+                        <option value="strong-hands">Strong Hands</option>
+                        <option value="hvac">HVAC Technician</option>
+                        <option value="locksmith">Locksmith</option>
+                        <option value="tiler">Tiler</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="jobDescription">Job Description</label>
+                    <button type="button" class="ai-assist-btn" id="aiAssistBtn">
+                        <i class="fas fa-magic"></i> Ask AI Assistant for Help
+                    </button>
+                    
+                    <!-- AI Assistant Panel -->
+                    <div class="ai-panel" id="aiPanel">
+                        <div class="ai-panel-header">
+                            <div class="ai-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="ai-panel-header-text">
+                                <h4>Fixie - Your AI Assistant</h4>
+                                <p>I'll help you describe your job accurately</p>
+                            </div>
+                            <button type="button" class="ai-close-btn" id="aiCloseBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="ai-conversation" id="aiConversation"></div>
+                        <div class="ai-input-row">
+                            <input type="text" class="ai-input" id="aiInput" placeholder="Type your answer or question...">
+                            <button type="button" class="ai-send-btn" id="aiSendBtn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <textarea id="jobDescription" class="form-control" rows="5" placeholder="Describe the job in detail..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Add Photo/Video (Max 10MB)</label>
+                    <div class="file-upload" id="mediaUpload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload a photo or short video</p>
+                        <input type="file" id="jobMedia" accept="image/*,video/*">
+                    </div>
+                    <div class="preview-container" id="mediaPreview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Location</label>
+                    <div class="location-options">
+                        <div class="location-option active" id="manualLocationOption">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>Enter Manually</p>
+                        </div>
+                        <div class="location-option" id="gpsLocationOption">
+                            <i class="fas fa-location-arrow"></i>
+                            <p>Use GPS</p>
+                        </div>
+                    </div>
+                    <input type="text" id="jobLocation" class="form-control" placeholder="Enter your address" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="budget">Your Budget ($)</label>
+                        <input type="number" id="budget" class="form-control" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workersNeeded">Number of Workers Needed</label>
+                        <select id="workersNeeded" class="form-control" required>
+                            <option value="1">1 Worker</option>
+                            <option value="2">2 Workers</option>
+                            <option value="3">3 Workers</option>
+                            <option value="4">4+ Workers</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="jobDate">Preferred Date</label>
+                    <input type="date" id="jobDate" class="form-control" required>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="allowCompanions">
+                    <label for="allowCompanions">Allow worker to bring companions if needed</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="agreeWaitlist" checked>
+                    <label for="agreeWaitlist">Add me to waitlist if no worker accepts within a few minutes</label>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Post Job</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Shared Code Confirmation Modal -->
+    <div id="codeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-code-modal" style="position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--gray);">&times;</span>
+            <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">
+                <i class="fas fa-check-circle" style="color: var(--success);"></i> Job Posted Successfully!
+            </h2>
+            <p style="text-align: center; margin-bottom: 20px;">Share this code with your worker for verification when they arrive.</p>
+            
+            <div class="shared-code-box">
+                <h3>Your Job Code</h3>
+                <div class="shared-code" id="generatedCode">XXXXXX</div>
+                <p class="shared-code-hint">Worker must provide this code upon arrival</p>
+                <div class="code-actions">
+                    <button class="btn btn-secondary" id="copyCodeBtn">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                    <button class="btn btn-outline" style="color: white; border-color: white;" id="printCodeBtn">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+            
+            <div class="searching-timer" id="searchingTimer" style="display: none;">
+                <h4><i class="fas fa-search"></i> Searching for workers...</h4>
+                <p>Notifying workers within 300 miles of your location</p>
+                <div class="timer-countdown" id="countdownDisplay">02:00</div>
+                <p class="timer-note">If no worker accepts within this time, you'll be added to the waitlist</p>
+            </div>
+            
+            <p style="text-align: center; font-size: 0.9rem; color: var(--gray); margin-top: 20px;">
+                <i class="fas fa-info-circle"></i> Both you and your worker will receive this code. The web host has a copy for dispute resolution.
+            </p>
+        </div>
+    </div>
+
+    <!-- Verify Worker Modal -->
+    <div id="verifyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-verify-modal" style="position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--gray);">&times;</span>
+            <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">
+                <i class="fas fa-shield-alt"></i> Verify Your Worker
+            </h2>
+            <p style="text-align: center; margin-bottom: 20px;">Enter the code you received to verify your worker's identity.</p>
+            
+            <div class="form-group">
+                <label for="verifyCodeInput">Enter Worker's Code</label>
+                <input type="text" id="verifyCodeInput" class="form-control" placeholder="XXXXXX" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; text-transform: uppercase;">
+            </div>
+            
+            <div id="verifyResult"></div>
+            
+            <div class="form-group">
+                <button class="btn btn-primary btn-block" id="verifyCodeBtn">Verify Worker</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Tab -->
+    <div id="home" class="tab-content active">
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Find Skilled Workers On Demand</h1>
+                    <p>Connect with trusted professionals for all your home and business needs.</p>
+                    <div class="search-box">
+                        <input type="text" placeholder="What service do you need?">
+                        <button>Search</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="services">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Our Services</h2>
+                    <p>From electrical work to landscaping, we have skilled professionals for all your needs</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card" data-service="electrician">
+                        <div class="service-icon"><i class="fas fa-bolt"></i></div>
+                        <h3>Electricians</h3>
+                        <p>Installations, repairs, and electrical system maintenance</p>
+                    </div>
+                    <div class="service-card" data-service="plumber">
+                        <div class="service-icon"><i class="fas fa-faucet"></i></div>
+                        <h3>Plumbers</h3>
+                        <p>Fix leaks, install fixtures, and handle all plumbing issues</p>
+                    </div>
+                    <div class="service-card" data-service="painter">
+                        <div class="service-icon"><i class="fas fa-paint-roller"></i></div>
+                        <h3>Painters</h3>
+                        <p>Interior and exterior painting with professional finish</p>
+                    </div>
+                    <div class="service-card" data-service="mason">
+                        <div class="service-icon"><i class="fas fa-hammer"></i></div>
+                        <h3>Masons</h3>
+                        <p>Brickwork, stonework, and concrete services</p>
+                    </div>
+                    <div class="service-card" data-service="landscaper">
+                        <div class="service-icon"><i class="fas fa-leaf"></i></div>
+                        <h3>Landscapers</h3>
+                        <p>Lawn care, landscaping, and garden maintenance</p>
+                    </div>
+                    <div class="service-card" data-service="welder">
+                        <div class="service-icon"><i class="fas fa-toolbox"></i></div>
+                        <h3>Welders</h3>
+                        <p>Metal fabrication, repairs, and custom welding projects</p>
+                    </div>
+                    <div class="service-card" data-service="carpenter">
+                        <div class="service-icon"><i class="fas fa-tree"></i></div>
+                        <h3>Carpenters</h3>
+                        <p>Custom woodwork, furniture, and structural carpentry</p>
+                    </div>
+                    <div class="service-card" data-service="strong-hands">
+                        <div class="service-icon"><i class="fas fa-user-shield"></i></div>
+                        <h3>Strong Hands</h3>
+                        <p>Heavy lifting, moving assistance, and manual labor</p>
+                    </div>
+                    <div class="service-card" data-service="hvac">
+                        <div class="service-icon"><i class="fas fa-fire"></i></div>
+                        <h3>HVAC Technicians</h3>
+                        <p>Heating, ventilation, and air conditioning services</p>
+                    </div>
+                    <div class="service-card" data-service="locksmith">
+                        <div class="service-icon"><i class="fas fa-key"></i></div>
+                        <h3>Locksmiths</h3>
+                        <p>Lock installation, repair, and emergency lockout services</p>
+                    </div>
+                    <div class="service-card" data-service="tiler">
+                        <div class="service-icon"><i class="fas fa-th-large"></i></div>
+                        <h3>Tilers</h3>
+                        <p>Floor and wall tiling with precision and expertise</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works">
+            <div class="container">
+                <div class="section-title">
+                    <h2>How Outfix Works</h2>
+                    <p>Getting the help you need is simple with our straightforward process</p>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Post Your Job</h3>
+                        <p>Use our AI assistant to describe your task accurately, add photos, set budget and location.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Get Matched</h3>
+                        <p>We notify qualified workers in your area who can help. Waitlist kicks in if nobody accepts soon.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Verify & Meet</h3>
+                        <p>Share your unique code with the worker to verify identity on arrival.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Job Completion</h3>
+                        <p>Approve completed work and release payment to the worker.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="workers" class="workers">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Top Rated Workers</h2>
+                    <p>Browse some of our highest-rated skilled professionals</p>
+                </div>
+                <div class="workers-slider">
+                    <div class="worker-card">
+                        <div class="worker-img" style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="worker-info">
+                            <h3>Michael Johnson</h3>
+                            <div class="worker-specialty">Electrician</div>
+                            <div class="worker-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                <span>4.7 (128 reviews)</span>
+                            </div>
+                            <button class="btn btn-primary">View Profile</button>
+                        </div>
+                    </div>
+                    <div class="worker-card">
+                        <div class="worker-img" style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="worker-info">
+                            <h3>Sarah Williams</h3>
+                            <div class="worker-specialty">Plumber</div>
+                            <div class="worker-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <span>5.0 (96 reviews)</span>
+                            </div>
+                            <button class="btn btn-primary">View Profile</button>
+                        </div>
+                    </div>
+                    <div class="worker-card">
+                        <div class="worker-img" style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="worker-info">
+                            <h3>Robert Chen</h3>
+                            <div class="worker-specialty">Painter</div>
+                            <div class="worker-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                <span>4.3 (203 reviews)</span>
+                            </div>
+                            <button class="btn btn-primary">View Profile</button>
+                        </div>
+                    </div>
+                    <div class="worker-card">
+                        <div class="worker-img" style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="worker-info">
+                            <h3>James Wilson</h3>
+                            <div class="worker-specialty">HVAC Technician</div>
+                            <div class="worker-rating">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                <span>4.6 (157 reviews)</span>
+                            </div>
+                            <button class="btn btn-primary">View Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Post Job Tab -->
+    <div id="post-job" class="tab-content">
+        <section class="job-posting">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Post a Job</h2>
+                    <p>Select a service category to get started</p>
+                </div>
+                <div class="job-form">
+                    <div class="services-grid">
+                        <div class="service-card" data-service="electrician">
+                            <div class="service-icon"><i class="fas fa-bolt"></i></div>
+                            <h3>Electricians</h3>
+                        </div>
+                        <div class="service-card" data-service="plumber">
+                            <div class="service-icon"><i class="fas fa-faucet"></i></div>
+                            <h3>Plumbers</h3>
+                        </div>
+                        <div class="service-card" data-service="painter">
+                            <div class="service-icon"><i class="fas fa-paint-roller"></i></div>
+                            <h3>Painters</h3>
+                        </div>
+                        <div class="service-card" data-service="mason">
+                            <div class="service-icon"><i class="fas fa-hammer"></i></div>
+                            <h3>Masons</h3>
+                        </div>
+                        <div class="service-card" data-service="landscaper">
+                            <div class="service-icon"><i class="fas fa-leaf"></i></div>
+                            <h3>Landscapers</h3>
+                        </div>
+                        <div class="service-card" data-service="welder">
+                            <div class="service-icon"><i class="fas fa-toolbox"></i></div>
+                            <h3>Welders</h3>
+                        </div>
+                        <div class="service-card" data-service="carpenter">
+                            <div class="service-icon"><i class="fas fa-tree"></i></div>
+                            <h3>Carpenters</h3>
+                        </div>
+                        <div class="service-card" data-service="strong-hands">
+                            <div class="service-icon"><i class="fas fa-user-shield"></i></div>
+                            <h3>Strong Hands</h3>
+                        </div>
+                        <div class="service-card" data-service="hvac">
+                            <div class="service-icon"><i class="fas fa-fire"></i></div>
+                            <h3>HVAC Technicians</h3>
+                        </div>
+                        <div class="service-card" data-service="locksmith">
+                            <div class="service-icon"><i class="fas fa-key"></i></div>
+                            <h3>Locksmiths</h3>
+                        </div>
+                        <div class="service-card" data-service="tiler">
+                            <div class="service-icon"><i class="fas fa-th-large"></i></div>
+                            <h3>Tilers</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- My Jobs Tab -->
+    <div id="jobs" class="tab-content">
+        <section class="job-listings">
+            <div class="container">
+                <div class="section-title">
+                    <h2>My Jobs</h2>
+                    <p>Manage your posted jobs and track their progress</p>
+                </div>
+                <div id="jobsList">
+                    <div class="no-jobs" style="text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-tasks" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                        <h3>No jobs yet</h3>
+                        <p>Post your first job to get started</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Verify Worker Tab -->
+    <div id="verify" class="tab-content">
+        <section class="verify-section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Verify Your Worker</h2>
+                    <p>Enter the shared code to confirm your worker has arrived at the correct location</p>
+                </div>
+                <div class="job-form" style="max-width: 500px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <i class="fas fa-shield-alt" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--primary); margin-bottom: 10px;">Secure Verification</h3>
+                        <p style="color: var(--gray);">For your safety, always verify your worker's code before allowing them to begin work.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="verifyCodeInput2">Worker's Shared Code</label>
+                        <input type="text" id="verifyCodeInput2" class="form-control" placeholder="XXXXXX" maxlength="6" style="text-align: center; font-size: 1.8rem; letter-spacing: 10px; text-transform: uppercase; font-family: 'Courier New', monospace;">
+                    </div>
+                    
+                    <div id="verifyResult2"></div>
+                    
+                    <div class="form-group">
+                        <button class="btn btn-primary btn-block" id="verifyCodeBtn2" style="font-size: 1.1rem; padding: 15px;">
+                            <i class="fas fa-check-circle"></i> Verify Worker
+                        </button>
+                    </div>
+                    
+                    <div style="background: var(--light); padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <h4 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> How Verification Works</h4>
+                        <ul style="margin-left: 20px; color: var(--gray); font-size: 0.9rem;">
+                            <li>When you post a job, you receive a unique 6-character code</li>
+                            <li>The same code is shared with your assigned worker</li>
+                            <li>A copy is securely stored with Outfix for dispute resolution</li>
+                            <li>Ask your worker for their code when they arrive</li>
+                            <li>Enter it here to confirm their identity</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Become a Member Tab -->
+    <div id="become-member" class="tab-content">
+        <section class="become-member">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Become an Outfix Worker</h2>
+                    <p>Join our platform and start earning by helping others with your skills</p>
+                </div>
+                <form id="memberForm" class="member-form">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trn">TRN Number</label>
+                        <input type="text" id="trn" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="idNumber">Government ID Number</label>
+                        <input type="text" id="idNumber" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="services">Services You Provide (Max 2)</label>
+                        <select id="services" class="form-control" multiple required>
+                            <option value="electrician">Electrician</option>
+                            <option value="plumber">Plumber</option>
+                            <option value="painter">Painter</option>
+                            <option value="mason">Mason</option>
+                            <option value="landscaper">Landscaper/Gardener</option>
+                            <option value="welder">Welder</option>
+                            <option value="carpenter">Carpenter</option>
+                            <option value="strong-hands">Strong Hands</option>
+                            <option value="hvac">HVAC Technician</option>
+                            <option value="locksmith">Locksmith</option>
+                            <option value="tiler">Tiler</option>
+                        </select>
+                        <small>Hold Ctrl/Cmd to select. Maximum 2 services allowed.</small>
+                    </div>
+                    <div id="certificationSection" class="certification-requirements">
+                        <h4><i class="fas fa-exclamation-circle"></i> Certification Required</h4>
+                        <p>For the services you've selected, you'll need to provide proof of certification or 3+ years of experience.</p>
+                        <div class="form-group">
+                            <label>Upload Certification Documents</label>
+                            <div class="file-upload" id="certificationUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload certification documents</p>
+                                <input type="file" id="certificationFiles" multiple>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Profile Picture</label>
+                        <div class="file-upload" id="profileUpload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload a clear profile picture</p>
+                            <input type="file" id="profilePicture" accept="image/*">
+                        </div>
+                        <div class="preview-container" id="profilePreview"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience">Years of Experience</label>
+                        <input type="number" id="experience" class="form-control" min="0" required>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <label for="agreeTerms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Apply to Become a Worker</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- App Download Section -->
+    <section class="app-download">
+        <div class="container">
+            <div class="app-content">
+                <h2>Get the Outfix App</h2>
+                <p>Book services, track workers, and manage payments all from your phone. Download our app today!</p>
+                <div class="app-buttons">
+                    <a href="#" class="app-btn">
+                        <i class="fab fa-apple"></i>
+                        <div><span>Download on the</span><strong>App Store</strong></div>
+                    </a>
+                    <a href="#" class="app-btn">
+                        <i class="fab fa-google-play"></i>
+                        <div><span>Get it on</span><strong>Google Play</strong></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Outfix</h3>
+                    <p>Connecting you with skilled professionals for all your home and business needs.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Electricians</a></li>
+                        <li><a href="#">Plumbers</a></li>
+                        <li><a href="#">Painters</a></li>
+                        <li><a href="#">Landscapers</a></li>
+                        <li><a href="#">HVAC Technicians</a></li>
+                        <li><a href="#">Masons</a></li>
+                        <li><a href="#">Welders</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Become a Worker</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Outfix. All rights reserved. | Service Fee: 7% on all transactions</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== SHARED CODE SYSTEM ====================
+        
+        function generateSharedCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        let activeCodes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
+
+        // ==================== DYNAMIC WAITLIST SYSTEM ====================
+        
+        // Waitlist timeout in seconds (2 minutes for demo - change to 300+ for production)
+        const WAITLIST_TIMEOUT = 120;
+        
+        // Active job search timers
+        let jobSearchTimers = {};
+
+        // Waitlist storage
+        let waitlist = JSON.parse(localStorage.getItem('outfixWaitlist')) || [];
+
+        // ==================== TAB NAVIGATION ====================
+        
+        document.querySelectorAll('.tab-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const tabId = this.getAttribute('data-tab');
+                
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                document.getElementById(tabId).classList.add('active');
+                
+                document.querySelectorAll('.tab-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                if (tabId === 'jobs') {
+                    displayJobs();
+                }
+            });
+        });
+
+        // ==================== AI ASSISTANT ====================
+        
+        // Knowledge base for different trades - this is where the "mini AI" lives
+        const aiKnowledgeBase = {
+            plumber: {
+                questions: [
+                    "What type of plumbing issue are you experiencing? (leak, clog, installation, etc.)",
+                    "Where is the issue located? (kitchen sink, bathroom, basement, etc.)",
+                    "Do you know the pipe size? Common sizes are 1/2\", 3/4\", or 1\" (you can say 'not sure')",
+                    "Is the pipe copper, PVC, PEX, or do you know?",
+                    "When did the issue start?"
+                ],
+                sizes: {
+                    "faucet": "Most kitchen faucets use 3/8\" supply lines. Bathroom faucets typically use 1/2\" or 3/8\".",
+                    "toilet": "Standard toilet supply lines are 3/8\" compression. The fill valve is usually 7/8\".",
+                    "shower": "Shower valves typically use 1/2\" connections.",
+                    "pipe": "Common household pipe sizes: 1/2\" for main lines, 3/4\" for larger fixtures, 1\" for main water line.",
+                    "water heater": "Water heater connections are usually 3/4\" NPT. T&P valve is 3/4\"."
+                },
+                tips: [
+                    "Turn off the water supply before the worker arrives to prevent further damage",
+                    "Take clear photos of the leak area and any visible pipe sizes",
+                    "Note if the water is hot or cold when leaking"
+                ]
+            },
+            electrician: {
+                questions: [
+                    "What electrical issue are you having? (outlet, breaker, lighting, wiring)",
+                    "Which room or area is affected?",
+                    "Have you checked your breaker box? Is anything tripped?",
+                    "What type of outlet/wiring do you have? (standard 110V, 220V, etc.)",
+                    "When did the issue start?"
+                ],
+                sizes: {
+                    "outlet": "Standard household outlets are 15A (110V). Dryer/range outlets are 30A-50A (220V).",
+                    "breaker": "Standard breakers are 15A, 20A, or 30A. Main breakers are usually 100A-200A.",
+                    "wire": "Common wire gauges: 14 AWG (15A), 12 AWG (20A), 10 AWG (30A).",
+                    "lighting": "Most home lighting uses 14 or 12 AWG wire with 15A or 20A circuits."
+                },
+                tips: [
+                    "TURN OFF POWER at the breaker before the worker arrives if safe to do so",
+                    "Never touch exposed wires",
+                    "Note which circuits are affected and any burning smells"
+                ]
+            },
+            hvac: {
+                questions: [
+                    "What's the issue? (not cooling/heating, strange noise, leak, etc.)",
+                    "What type of system do you have? (central AC, heat pump, furnace, mini-split)",
+                    "When was your last maintenance/service?",
+                    "Is the unit making any unusual sounds?",
+                    "What's the approximate age of the system?"
+                ],
+                sizes: {
+                    "filter": "Common filter sizes: 16x20, 20x20, 20x25, 24x24. Check your current filter for size.",
+                    "ductwork": "Standard ducts are 6\", 8\", or 10\" diameter for branches, 14-18\" for mains.",
+                    "refrigerant": "Most modern units use R-410A. Older units may use R-22 (now phased out)."
+                },
+                tips: [
+                    "Check if the air filter is dirty and needs replacement",
+                    "Ensure the thermostat is set correctly",
+                    "Note any error codes displayed on the unit"
+                ]
+            },
+            painter: {
+                questions: [
+                    "What are you painting? (interior walls, exterior, cabinets, fence, etc.)",
+                    "What's the approximate square footage or number of rooms?",
+                    "Are there any repairs needed before painting? (holes, cracks, peeling)",
+                    "Do you have a color preference or need help choosing?",
+                    "What's the current surface type? (drywall, wood, concrete, etc.)"
+                ],
+                tips: [
+                    "Take photos of the area in natural light",
+                    "Note any furniture that needs moving",
+                    "Mention if you have the paint already or need it included"
+                ]
+            },
+            carpenter: {
+                questions: [
+                    "What type of carpentry work do you need? (repair, build, install)",
+                    "What are the approximate dimensions of the project?",
+                    "What type of wood/material? (oak, pine, plywood, MDF)",
+                    "Is this indoor or outdoor work?",
+                    "Do you have materials or need them supplied?"
+                ],
+                sizes: {
+                    "wood": "Common lumber sizes: 2x4 (actual 1.5\"x3.5\"), 2x6 (1.5\"x5.5\"), 2x8 (1.5\"x7.25\"), 1x boards (actual 3/4\" thick)"
+                },
+                tips: [
+                    "Include photos of the area and any existing structures",
+                    "Measure the space if possible",
+                    "Note any specific requirements or matching needs"
+                ]
+            },
+            mason: {
+                questions: [
+                    "What type of masonry work? (brick, block, stone, concrete)",
+                    "What's the approximate area or number of bricks/blocks needed?",
+                    "Is this repair work or new construction?",
+                    "What type of mortar or concrete? (you can say 'not sure')",
+                    "Any access limitations? (tight spaces, height, etc.)"
+                ],
+                tips: [
+                    "Take photos showing the full extent of the work area",
+                    "Note if there's existing damage that needs assessment",
+                    "Mention any weather concerns for scheduling"
+                ]
+            },
+            landscaper: {
+                questions: [
+                    "What landscaping service do you need? (mowing, planting, design, cleanup)",
+                    "What's the approximate size of the area? (in square feet or acres)",
+                    "What's the current condition of the space?",
+                    "Any specific plants or features you want included?",
+                    "How often do you need this service?"
+                ],
+                tips: [
+                    "Take photos of the area from multiple angles",
+                    "Note any existing plants you want to keep",
+                    "Mention any drainage or soil issues"
+                ]
+            },
+            welder: {
+                questions: [
+                    "What type of welding work? (repair, fabrication, custom project)",
+                    "What materials need welding? (steel, aluminum, stainless)",
+                    "What's the approximate size and thickness?",
+                    "Is this indoor or outdoor work?",
+                    "Do you have the materials or need them supplied?"
+                ],
+                tips: [
+                    "Take clear photos of the items to be welded",
+                    "Note the thickness of the metal if known",
+                    "Mention any access requirements (height, tight spaces)"
+                ]
+            },
+            "strong-hands": {
+                questions: [
+                    "What do you need help with? (moving, lifting, loading, assembly)",
+                    "Approximate weight and number of items?",
+                    "Is there a time limit or deadline?",
+                    "Any stairs or tight spaces involved?",
+                    "How many people do you think you need?"
+                ],
+                tips: [
+                    "List all items and approximate weights",
+                    "Note any access restrictions (narrow doors, stairs)",
+                    "Mention if you have a truck or need transport"
+                ]
+            },
+            locksmith: {
+                questions: [
+                    "What locksmith service do you need? (lockout, lock change, installation)",
+                    "What type of lock? (deadbolt, knob, smart lock, car lock)",
+                    "Do you have the key or is it lost?",
+                    "Is this a residential, commercial, or auto lock?",
+                    "Is this an emergency?"
+                ],
+                tips: [
+                    "Have proof of ownership/residence ready",
+                    "Note the brand of lock if known",
+                    "For car lockouts, have your registration ready"
+                ]
+            },
+            tiler: {
+                questions: [
+                    "What area needs tiling? (kitchen, bathroom, floor, wall)",
+                    "What's the approximate square footage?",
+                    "What type of tile? (ceramic, porcelain, natural stone)",
+                    "Is there existing tile that needs removal?",
+                    "Do you have the tiles or need them supplied?"
+                ],
+                tips: [
+                    "Measure the area accurately if possible",
+                    "Take photos of the current surface",
+                    "Note if there are any uneven surfaces or water issues"
+                ]
+            }
+        };
+
+        let currentAiContext = {
+            service: null,
+            conversationStep: 0,
+            answers: [],
+            waitingForInput: false
+        };
+
+        const aiAssistBtn = document.getElementById('aiAssistBtn');
+        const aiPanel = document.getElementById('aiPanel');
+        const aiCloseBtn = document.getElementById('aiCloseBtn');
+        const aiConversation = document.getElementById('aiConversation');
+        const aiInput = document.getElementById('aiInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+        const serviceTypeSelect = document.getElementById('serviceType');
+        const jobDescriptionField = document.getElementById('jobDescription');
+
+        aiAssistBtn.addEventListener('click', function() {
+            const service = serviceTypeSelect.value;
+            
+            if (!service) {
+                showNotification('Please select a service type first, then I can help you!');
+                return;
+            }
+            
+            aiPanel.classList.add('show');
+            
+            // Start new conversation if service changed
+            if (currentAiContext.service !== service) {
+                currentAiContext = {
+                    service: service,
+                    conversationStep: 0,
+                    answers: [],
+                    waitingForInput: false
+                };
+                aiConversation.innerHTML = '';
+                startAiConversation(service);
+            }
+        });
+
+        aiCloseBtn.addEventListener('click', function() {
+            aiPanel.classList.remove('show');
+        });
+
+        function startAiConversation(service) {
+            const serviceName = service.replace('-', ' ');
+            const greeting = `Hi! I'm Fixie, your AI assistant. I'll help you describe your ${serviceName} job accurately so the right professional arrives prepared.
+
+Let me ask a few quick questions.`;
+            
+            addAiMessage('assistant', greeting);
+            
+            setTimeout(() => {
+                const knowledge = aiKnowledgeBase[service];
+                if (knowledge && knowledge.questions.length > 0) {
+                    addAiMessage('assistant', knowledge.questions[0]);
+                    currentAiContext.waitingForInput = true;
+                } else {
+                    addAiMessage('assistant', "Please describe your job in your own words and I'll help refine it!");
+                    currentAiContext.waitingForInput = true;
+                }
+            }, 1000);
+        }
+
+        function addAiMessage(type, content, quickReplies = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${type}`;
+            
+            const iconHtml = type === 'assistant' 
+                ? '<div class="ai-message-icon"><i class="fas fa-robot"></i></div>'
+                : '<div class="ai-message-icon"><i class="fas fa-user"></i></div>';
+            
+            let quickRepliesHtml = '';
+            if (quickReplies && quickReplies.length > 0) {
+                quickRepliesHtml = '<div class="ai-quick-replies">' + 
+                    quickReplies.map(reply => `<button type="button" class="ai-quick-reply" onclick="selectQuickReply('${reply}')">${reply}</button>`).join('') + 
+                    '</div>';
+            }
+            
+            messageDiv.innerHTML = `
+                ${type === 'user' ? iconHtml : ''}
+                <div class="ai-message-bubble">
+                    ${content}
+                    ${quickRepliesHtml}
+                </div>
+                ${type === 'assistant' ? iconHtml : ''}
+            `;
+            
+            aiConversation.appendChild(messageDiv);
+            aiConversation.scrollTop = aiConversation.scrollHeight;
+        }
+
+        function showAiTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-message assistant';
+            typingDiv.id = 'aiTyping';
+            typingDiv.innerHTML = `
+                <div class="ai-message-icon"><i class="fas fa-robot"></i></div>
+                <div class="ai-typing">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            aiConversation.appendChild(typingDiv);
+            aiConversation.scrollTop = aiConversation.scrollHeight;
+        }
+
+        function removeAiTyping() {
+            const typing = document.getElementById('aiTyping');
+            if (typing) typing.remove();
+        }
+
+        function selectQuickReply(reply) {
+            aiInput.value = reply;
+            handleAiInput();
+        }
+
+        function handleAiInput() {
+            const input = aiInput.value.trim();
+            if (!input) return;
+            
+            addAiMessage('user', input);
+            currentAiContext.answers.push(input);
+            aiInput.value = '';
+            
+            showAiTyping();
+            
+            setTimeout(() => {
+                removeAiTyping();
+                processAiResponse(input);
+            }, 1200);
+        }
+
+        aiSendBtn.addEventListener('click', handleAiInput);
+        aiInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAiInput();
+            }
+        });
+
+        function processAiResponse(userInput) {
+            const service = currentAiContext.service;
+            const knowledge = aiKnowledgeBase[service];
+            const step = currentAiContext.answers.length;
+            
+            // Check for specific terms that need size information
+            const lowerInput = userInput.toLowerCase();
+            let sizeInfo = null;
+            
+            if (knowledge && knowledge.sizes) {
+                for (const [key, value] of Object.entries(knowledge.sizes)) {
+                    if (lowerInput.includes(key)) {
+                        sizeInfo = value;
+                        break;
+                    }
+                }
+            }
+            
+            // Show size info if relevant
+            if (sizeInfo) {
+                setTimeout(() => {
+                    addAiMessage('assistant', `💡 <strong>Helpful info:</strong> ${sizeInfo}`);
+                }, 500);
+            }
+            
+            // Continue with next question or generate summary
+            if (knowledge && step < knowledge.questions.length) {
+                setTimeout(() => {
+                    addAiMessage('assistant', knowledge.questions[step]);
+                    
+                    // Add quick replies for certain questions
+                    if (step === 2 && service === 'plumber') {
+                        // Add quick reply buttons after the question is added
+                        setTimeout(() => {
+                            const lastBubble = aiConversation.querySelector('.ai-message.assistant:last-child .ai-message-bubble');
+                            if (lastBubble && !lastBubble.querySelector('.ai-quick-replies')) {
+                                const quickRepliesHtml = '<div class="ai-quick-replies">' +
+                                    '<button type="button" class="ai-quick-reply" onclick="selectQuickReply(\'Not sure\')">Not sure</button>' +
+                                    '<button type="button" class="ai-quick-reply" onclick="selectQuickReply(\'1/2 inch\')">1/2 inch</button>' +
+                                    '<button type="button" class="ai-quick-reply" onclick="selectQuickReply(\'3/4 inch\')">3/4 inch</button>' +
+                                    '<button type="button" class="ai-quick-reply" onclick="selectQuickReply(\'1 inch\')">1 inch</button>' +
+                                    '</div>';
+                                lastBubble.insertAdjacentHTML('beforeend', quickRepliesHtml);
+                            }
+                        }, 100);
+                    }
+                }, 800);
+            } else {
+                // Generate final summary
+                setTimeout(() => {
+                    const summary = generateJobSummary(service, currentAiContext.answers);
+                    addAiMessage('assistant', summary.message);
+                    
+                    if (summary.tips) {
+                        setTimeout(() => {
+                            addAiMessage('assistant', `📋 <strong>Preparation tips for your worker:</strong><ul style="margin-left: 15px; margin-top: 5px;">${summary.tips.map(tip => `<li>${tip}</li>`).join('')}</ul>`);
+                        }, 600);
+                    }
+                    
+                    // Offer to apply the description
+                    setTimeout(() => {
+                        const applyHtml = `
+                            <div class="ai-suggestion-box">
+                                <h5><i class="fas fa-magic"></i> Ready to use this description?</h5>
+                                <p style="font-size: 0.85rem; color: var(--gray); margin-top: 5px;">Click below to add it to your job form. You can edit it afterward.</p>
+                                <button type="button" class="btn btn-ai" id="applyAiDescriptionBtn">
+                                    <i class="fas fa-check"></i> Apply to Job Description
+                                </button>
+                            </div>
+                        `;
+                        addAiMessage('assistant', applyHtml);
+                        
+                        setTimeout(() => {
+                            const applyBtn = document.getElementById('applyAiDescriptionBtn');
+                            if (applyBtn) {
+                                applyBtn.addEventListener('click', function() {
+                                    jobDescriptionField.value = summary.description;
+                                    showNotification('AI description applied! You can edit it if needed.');
+                                    aiPanel.classList.remove('show');
+                                });
+                            }
+                        }, 100);
+                    }, 1200);
+                }, 800);
+            }
+        }
+
+        function generateJobSummary(service, answers) {
+            const serviceName = service.replace('-', ' ');
+            const knowledge = aiKnowledgeBase[service];
+            
+            // Build a professional description
+            let description = `${serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} job:\n\n`;
+            
+            const labels = knowledge && knowledge.questions ? knowledge.questions : ['Details'];
+            
+            answers.forEach((answer, index) => {
+                const label = labels[index] || `Detail ${index + 1}`;
+                // Extract just the question part before the parenthesis
+                const cleanLabel = label.split('(')[0].trim().replace(/\?$/, '');
+                description += `• ${cleanLabel}: ${answer}\n`;
+            });
+            
+            description += `\nPlease review photos and reach out if you need any additional information.`;
+            
+            let message = `Perfect! I've put together a detailed description based on your answers. The worker will know exactly what to expect.`;
+            
+            let tips = knowledge && knowledge.tips ? knowledge.tips : null;
+            
+            return {
+                description: description,
+                message: message,
+                tips: tips
+            };
+        }
+
+        // ==================== JOB POSTING ====================
+        
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const service = this.getAttribute('data-service');
+                document.getElementById('serviceType').value = service;
+                
+                // Reset AI context for new service
+                currentAiContext = {
+                    service: null,
+                    conversationStep: 0,
+                    answers: [],
+                    waitingForInput: false
+                };
+                aiConversation.innerHTML = '';
+                aiPanel.classList.remove('show');
+                
+                document.getElementById('jobModal').style.display = 'block';
+            });
+        });
+
+        const modal = document.getElementById('jobModal');
+        const closeModal = document.querySelector('.close-modal');
+
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Location options
+        const manualLocationOption = document.getElementById('manualLocationOption');
+        const gpsLocationOption = document.getElementById('gpsLocationOption');
+        const jobLocation = document.getElementById('jobLocation');
+
+        manualLocationOption.addEventListener('click', function() {
+            manualLocationOption.classList.add('active');
+            gpsLocationOption.classList.remove('active');
+            jobLocation.placeholder = 'Enter your address';
+        });
+
+        gpsLocationOption.addEventListener('click', function() {
+            gpsLocationOption.classList.add('active');
+            manualLocationOption.classList.remove('active');
+            jobLocation.placeholder = 'Getting your location...';
+            
+            setTimeout(() => {
+                jobLocation.value = '123 Main St, Anytown, USA';
+                showNotification('Location retrieved successfully!');
+            }, 1500);
+        });
+
+        // File upload preview
+        const mediaUpload = document.getElementById('mediaUpload');
+        const jobMedia = document.getElementById('jobMedia');
+        const mediaPreview = document.getElementById('mediaPreview');
+
+        mediaUpload.addEventListener('click', function() {
+            jobMedia.click();
+        });
+
+        jobMedia.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const fileSize = file.size / 1024 / 1024;
+                
+                if (fileSize > 10) {
+                    showNotification('File size exceeds 10MB limit. Please choose a smaller file.');
+                    return;
+                }
+                
+                mediaPreview.style.display = 'block';
+                
+                if (file.type.startsWith('image/')) {
+                    mediaPreview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview">`;
+                } else if (file.type.startsWith('video/')) {
+                    mediaPreview.innerHTML = `<video controls><source src="${URL.createObjectURL(file)}" type="${file.type}">Your browser does not support the video tag.</video>`;
+                }
+            }
+        });
+
+        // ==================== JOB FORM SUBMISSION ====================
+        
+        const jobForm = document.getElementById('jobForm');
+        
+        jobForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const serviceType = document.getElementById('serviceType').value;
+            const sharedCode = generateSharedCode();
+            
+            const jobData = {
+                id: Date.now(),
+                title: document.getElementById('jobTitle').value,
+                service: serviceType,
+                description: document.getElementById('jobDescription').value,
+                budget: document.getElementById('budget').value,
+                workers: document.getElementById('workersNeeded').value,
+                location: document.getElementById('jobLocation').value,
+                date: document.getElementById('jobDate').value,
+                allowCompanions: document.getElementById('allowCompanions').checked,
+                agreedToWaitlist: document.getElementById('agreeWaitlist').checked,
+                status: 'searching', // New status: searching for workers
+                postedAt: new Date(),
+                sharedCode: sharedCode,
+                waitTime: null,
+                assignedWorker: null
+            };
+            
+            // Save job
+            let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
+            jobs.push(jobData);
+            localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+            
+            // Save code
+            activeCodes[sharedCode] = {
+                jobId: jobData.id,
+                jobTitle: jobData.title,
+                clientLocation: jobData.location,
+                createdAt: new Date()
+            };
+            localStorage.setItem('outfixCodes', JSON.stringify(activeCodes));
+            
+            // Reset form and show code modal
+            jobForm.reset();
+            modal.style.display = 'none';
+            document.getElementById('generatedCode').textContent = sharedCode;
+            document.getElementById('codeModal').style.display = 'block';
+            
+            // Start the countdown timer
+            startJobSearchTimer(jobData.id, sharedCode);
+            
+            showNotification('Job posted! Notifying workers in your area...');
+        });
+
+        // ==================== DYNAMIC WAITLIST TIMER ====================
+        
+        function startJobSearchTimer(jobId, code) {
+            const timerDisplay = document.getElementById('searchingTimer');
+            const countdownDisplay = document.getElementById('countdownDisplay');
+            
+            timerDisplay.style.display = 'block';
+            
+            let secondsLeft = WAITLIST_TIMEOUT;
+            
+            // Clear any existing timer for this job
+            if (jobSearchTimers[jobId]) {
+                clearInterval(jobSearchTimers[jobId]);
+            }
+            
+            // Update countdown display
+            function updateCountdown() {
+                const mins = Math.floor(secondsLeft / 60);
+                const secs = secondsLeft % 60;
+                countdownDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+            
+            updateCountdown();
+            
+            jobSearchTimers[jobId] = setInterval(() => {
+                secondsLeft--;
+                updateCountdown();
+                
+                // Simulate workers accepting at random intervals
+                // 60% chance worker accepts before timeout
+                if (secondsLeft > 30 && Math.random() < 0.015) {
+                    // Worker accepted!
+                    clearInterval(jobSearchTimers[jobId]);
+                    delete jobSearchTimers[jobId];
+                    
+                    timerDisplay.style.display = 'none';
+                    
+                    let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
+                    const jobIndex = jobs.findIndex(job => job.id === jobId);
+                    
+                    if (jobIndex !== -1) {
+                        jobs[jobIndex].status = 'accepted';
+                        jobs[jobIndex].assignedWorker = {
+                            name: 'Michael Johnson',
+                            specialty: jobs[jobIndex].service.charAt(0).toUpperCase() + jobs[jobIndex].service.slice(1).replace('-', ' '),
+                            photo: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                            phone: '+1 (555) 123-4567'
+                        };
+                        localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+                        
+                        showNotification(`Great! Michael Johnson accepted your job. Code: ${code}`);
+                    }
+                    
+                    return;
+                }
+                
+                if (secondsLeft <= 0) {
+                    // Time's up - add to waitlist
+                    clearInterval(jobSearchTimers[jobId]);
+                    delete jobSearchTimers[jobId];
+                    
+                    let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
+                    const jobIndex = jobs.findIndex(job => job.id === jobId);
+                    
+                    if (jobIndex !== -1 && jobs[jobIndex].agreedToWaitlist) {
+                        jobs[jobIndex].status = 'waitlisted';
+                        jobs[jobIndex].waitTime = '2-3 hours';
+                        localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+                        
+                        // Add to waitlist
+                        waitlist.push({
+                            jobId: jobId,
+                            service: jobs[jobIndex].service,
+                            waitTime: '2-3 hours',
+                            addedAt: new Date()
+                        });
+                        localStorage.setItem('outfixWaitlist', JSON.stringify(waitlist));
+                        
+                        timerDisplay.innerHTML = `
+                            <h4><i class="fas fa-hourglass-half"></i> Added to Waitlist</h4>
+                            <p>No workers were available immediately. You've been added to our waitlist.</p>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning); margin: 10px 0;">Expected Wait: 2-3 hours</div>
+                            <p style="font-size: 0.85rem;">We'll notify you as soon as a worker becomes available.</p>
+                        `;
+                        
+                        showNotification('No workers available right now. Added to waitlist - expected wait: 2-3 hours');
+                    } else {
+                        // User didn't agree to waitlist
+                        jobs = jobs.filter(job => job.id !== jobId);
+                        localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+                        
+                        // Remove code
+                        const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
+                        delete codes[code];
+                        localStorage.setItem('outfixCodes', JSON.stringify(codes));
+                        
+                        timerDisplay.innerHTML = `
+                            <h4><i class="fas fa-times-circle"></i> No Workers Available</h4>
+                            <p>Unfortunately, no workers were available within the time limit. Please try again later.</p>
+                        `;
+                        
+                        showNotification('No workers available. Please try again later.');
+                    }
+                }
+            }, 1000);
+        }
+
+        // ==================== CODE MODAL ====================
+        
+        document.querySelector('.close-code-modal').addEventListener('click', function() {
+            document.getElementById('codeModal').style.display = 'none';
+            document.getElementById('searchingTimer').style.display = 'none';
+        });
+
+        document.getElementById('copyCodeBtn').addEventListener('click', function() {
+            const code = document.getElementById('generatedCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('Code copied to clipboard!');
+            }).catch(() => {
+                showNotification('Code: ' + code);
+            });
+        });
+
+        document.getElementById('printCodeBtn').addEventListener('click', function() {
+            window.print();
+        });
+
+        // ==================== VERIFY WORKER ====================
+        
+        function verifyCode(inputId, resultId) {
+            const input = document.getElementById(inputId);
+            const result = document.getElementById(resultId);
+            const code = input.value.trim().toUpperCase();
+            
+            if (code.length !== 6) {
+                result.innerHTML = `
+                    <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+                        <i class="fas fa-exclamation-triangle"></i> Please enter a 6-character code
+                    </div>
+                `;
+                return;
+            }
+            
+            const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
+            
+            if (codes[code]) {
+                const codeData = codes[code];
+                result.innerHTML = `
+                    <div style="background: #d4edda; color: #155724; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <h4 style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Worker Verified!</h4>
+                        <p><strong>Job:</strong> ${codeData.jobTitle}</p>
+                        <p><strong>Location:</strong> ${codeData.clientLocation}</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;"><i class="fas fa-shield-alt"></i> This worker is authorized for this job.</p>
+                    </div>
+                `;
+                showNotification('Worker verified successfully!');
+            } else {
+                result.innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <h4 style="margin-bottom: 10px;"><i class="fas fa-times-circle"></i> Invalid Code</h4>
+                        <p>This code does not match any active jobs. Please verify and try again.</p>
+                    </div>
+                `;
+                showNotification('Invalid code. Please check and try again.');
+            }
+        }
+
+        document.getElementById('verifyCodeBtn').addEventListener('click', function() {
+            verifyCode('verifyCodeInput', 'verifyResult');
+        });
+
+        document.getElementById('verifyCodeBtn2').addEventListener('click', function() {
+            verifyCode('verifyCodeInput2', 'verifyResult2');
+        });
+
+        // ==================== JOB DISPLAY ====================
+        
+        function displayJobs() {
+            const jobsList = document.getElementById('jobsList');
+            const jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
+            
+            if (jobs.length === 0) {
+                jobsList.innerHTML = `
+                    <div class="no-jobs" style="text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-tasks" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                        <h3>No jobs yet</h3>
+                        <p>Post your first job to get started</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            jobsList.innerHTML = '';
+            
+            jobs.forEach(job => {
+                const timePassed = calculateTimePassed(job.postedAt);
+                
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card';
+                
+                let workerSection = '';
+                if (job.assignedWorker) {
+                    workerSection = `
+                        <div class="assigned-worker">
+                            <div class="assigned-worker-img" style="background-image: url('${job.assignedWorker.photo}');"></div>
+                            <div class="assigned-worker-info">
+                                <h4>${job.assignedWorker.name}</h4>
+                                <p>${job.assignedWorker.specialty} • ${job.assignedWorker.phone}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                let waitlistSection = '';
+                if (job.status === 'waitlisted' && job.waitTime) {
+                    waitlistSection = `
+                        <div class="waitlist-banner" style="margin: 15px 0;">
+                            <i class="fas fa-hourglass-half"></i>
+                            <div class="waitlist-banner-content">
+                                <h4>On Waitlist</h4>
+                                <p>Expected wait time: <strong>${job.waitTime}</strong></p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                let codeSection = '';
+                if (job.sharedCode && job.status !== 'completed' && job.status !== 'waitlisted') {
+                    codeSection = `
+                        <div class="shared-code-box" style="padding: 15px; margin: 15px 0;">
+                            <h3 style="font-size: 0.8rem;">Your Job Code</h3>
+                            <div class="shared-code" style="font-size: 1.8rem; letter-spacing: 5px; padding: 10px; margin: 10px 0;">${job.sharedCode}</div>
+                            <p class="shared-code-hint" style="font-size: 0.8rem;">Share with your worker for verification</p>
+                        </div>
+                    `;
+                }
+                
+                const statusDisplay = job.status === 'searching' ? 'Searching' : job.status.charAt(0).toUpperCase() + job.status.slice(1);
+                
+                jobCard.innerHTML = `
+                    <div class="job-header">
+                        <div class="job-title">${job.title}</div>
+                        <div class="job-status ${job.status}">${statusDisplay}</div>
+                    </div>
+                    <div class="job-details">
+                        <div class="job-detail">
+                            <i class="fas fa-tag"></i>
+                            <span>${job.service.charAt(0).toUpperCase() + job.service.slice(1).replace('-', ' ')}</span>
+                        </div>
+                        <div class="job-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${job.location}</span>
+                        </div>
+                        <div class="job-detail">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>$${job.budget}</span>
+                        </div>
+                        <div class="job-detail">
+                            <i class="fas fa-users"></i>
+                            <span>${job.workers} worker(s)</span>
+                        </div>
+                    </div>
+                    ${workerSection}
+                    ${waitlistSection}
+                    ${codeSection}
+                    <div class="job-description">
+                        <p style="white-space: pre-line;">${job.description}</p>
+                    </div>
+                    <div class="job-timer">
+                        <i class="fas fa-clock"></i>
+                        <span>Posted ${timePassed}</span>
+                    </div>
+                    <div class="job-actions">
+                        ${job.status === 'pending' || job.status === 'searching' ? `
+                            <button class="btn btn-outline edit-job" data-id="${job.id}">Edit</button>
+                            <button class="btn btn-danger cancel-job" data-id="${job.id}">Cancel</button>
+                        ` : ''}
+                        ${job.status === 'waitlisted' ? `
+                            <button class="btn btn-warning remove-waitlist" data-id="${job.id}">Remove from Waitlist</button>
+                        ` : ''}
+                        ${job.status === 'accepted' ? `
+                            <button class="btn btn-success complete-job" data-id="${job.id}">Mark Complete</button>
+                        ` : ''}
+                    </div>
+                `;
+                
+                jobsList.appendChild(jobCard);
+            });
+            
+            document.querySelectorAll('.edit-job').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showNotification('Edit functionality would open the job in the posting form');
+                });
+            });
+            
+            document.querySelectorAll('.cancel-job').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    cancelJob(this.getAttribute('data-id'));
+                });
+            });
+            
+            document.querySelectorAll('.complete-job').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    completeJob(this.getAttribute('data-id'));
+                });
+            });
+            
+            document.querySelectorAll('.remove-waitlist').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    removeFromWaitlist(this.getAttribute('data-id'));
+                });
+            });
+        }
+
+        function calculateTimePassed(postedAt) {
+            const now = new Date();
+            const posted = new Date(postedAt);
+            const diffMs = now - posted;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHrs = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHrs / 24);
+            
+            if (diffMins < 1) return 'just now';
+            if (diffMins < 60) return `${diffMins} minute(s) ago`;
+            if (diffHrs < 24) return `${diffHrs} hour(s) ago`;
+            return `${diffDays} day(s) ago`;
+        }
+
+        function cancelJob(jobId) {
+            if (confirm('Are you sure you want to cancel this job?')) {
+                let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
+                const job = jobs.find(j => j.id == jobId);
+                
+                if (job && job.sharedCode) {
+                    const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
+                    delete codes[job.sharedCode];
+                    localStorage.setItem('outfixCodes', JSON.stringify(codes));
+                }
+                
+                // Clear any active timer
+                if (jobSearchTimers[jobId]) {
+                    clearInterval(jobSearchTimers[jobId]);
+                    delete jobSearchTimers[jobId];
+                }
+                
+                jobs = jobs.filter(job => job.id != jobId);
+                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+                displayJobs();
+                showNotification('Job cancelled successfully');
+            }
+        }
+
+        function removeFromWaitlist(jobId) {
+            if (confirm('Remove this job from the waitlist?')) {
+                let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
+                jobs = jobs.filter(job => job.id != jobId);
+                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+                
+                let waitlistItems = JSON.parse(localStorage.getItem('outfixWaitlist')) || [];
+                waitlistItems = waitlistItems.filter(item => item.jobId != jobId);
+                localStorage.setItem('outfixWaitlist', JSON.stringify(waitlistItems));
+                
+                displayJobs();
+                showNotification('Removed from waitlist');
+            }
+        }
+
+        function completeJob(jobId) {
+            let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
+            const jobIndex = jobs.findIndex(job => job.id == jobId);
+            
+            if (jobIndex !== -1) {
+                jobs[jobIndex].status = 'completed';
+                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+                displayJobs();
+                showNotification('Job marked as completed. Payment has been released to the worker.');
+            }
+        }
+
+        // ==================== NOTIFICATIONS ====================
+        
+        function showNotification(message) {
+            const notification = document.querySelector('.notification');
+            const notificationContent = notification.querySelector('.notification-content p');
+            
+            notificationContent.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        document.querySelector('.notification-close').addEventListener('click', function() {
+            document.querySelector('.notification').classList.remove('show');
+        });
+
+        // ==================== WORKER REGISTRATION ====================
+        
+        const servicesSelect = document.getElementById('services');
+        const certificationSection = document.getElementById('certificationSection');
+
+        servicesSelect.addEventListener('change', function() {
+            const selectedOptions = Array.from(this.selectedOptions).map(option => option.value);
+            
+            if (selectedOptions.length > 2) {
+                showNotification('You can only select a maximum of 2 services.');
+                this.options[this.selectedIndex].selected = false;
+                return;
+            }
+            
+            const certifiedServices = ['electrician', 'plumber', 'hvac'];
+            const requiresCertification = selectedOptions.some(service => 
+                certifiedServices.includes(service)
+            );
+            
+            certificationSection.style.display = requiresCertification ? 'block' : 'none';
+        });
+
+        const memberForm = document.getElementById('memberForm');
+        
+        memberForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const memberData = {
+                name: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                trn: document.getElementById('trn').value,
+                idNumber: document.getElementById('idNumber').value,
+                services: Array.from(document.getElementById('services').selectedOptions).map(option => option.value),
+                experience: document.getElementById('experience').value
+            };
+            
+            console.log('Member application:', memberData);
+            showNotification('Application submitted successfully! We will review your information and get back to you soon.');
+            memberForm.reset();
+            certificationSection.style.display = 'none';
+        });
+
+        const profileUpload = document.getElementById('profileUpload');
+        const profilePicture = document.getElementById('profilePicture');
+        const profilePreview = document.getElementById('profilePreview');
+
+        profileUpload.addEventListener('click', function() {
+            profilePicture.click();
+        });
+
+        profilePicture.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please select an image file.');
+                    return;
+                }
+                
+                profilePreview.style.display = 'block';
+                profilePreview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Profile Preview">`;
+            }
+        });
+
+        const certificationUpload = document.getElementById('certificationUpload');
+        const certificationFiles = document.getElementById('certificationFiles');
+
+        if (certificationUpload) {
+            certificationUpload.addEventListener('click', function() {
+                certificationFiles.click();
+            });
+        }
+
+        // ==================== MOBILE MENU ====================
+        
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            if (navLinks.style.display === 'flex') {
+                navLinks.style.display = 'none';
+                authButtons.style.display = 'none';
+            } else {
+                navLinks.style.display = 'flex';
+                authButtons.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                authButtons.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '80px';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.backgroundColor = 'white';
+                navLinks.style.padding = '20px';
+                navLinks.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
+                
+                authButtons.style.position = 'absolute';
+                authButtons.style.top = '320px';
+                authButtons.style.left = '0';
+                authButtons.style.width = '100%';
+                authButtons.style.padding = '20px';
+                authButtons.style.backgroundColor = 'white';
+                authButtons.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Outfix loaded with AI assistant ready!');
+        });
+    </script>
+</body>
+</html>
