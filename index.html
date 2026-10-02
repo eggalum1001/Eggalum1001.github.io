@@ -3096,7 +3096,7 @@ https://satvqcatnilppxwretrb.supabase.co/rest/v1/
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // sb_publishable_5s9tkMESDP4zKXxWitn3JA_41JQ90AE
   
   // Create the connection client
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const db = supabase.createClient(supabaseUrl, supabaseKey);
   
   console.log('Supabase connected:', supabase);
     </script>
