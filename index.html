@@ -3088,54 +3088,34 @@ Let me ask a few quick questions.`;
             console.log('Outfix loaded with AI assistant ready!');
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0d2Nxb25nYmdqa2FqanpldXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NjMzNDgsImV4cCI6MjEwNjQzOTM0OH0.lxvHVADk3kfa_ll44j-xLnXjI04WLS9m7nny3jq3XHY
-https://satvqcatnilppxwretrb.supabase.co/rest/v1/
-  const supabaseUrl = 'https://atwcqongbgjkajjzeupt.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // sb_publishable_5s9tkMESDP4zKXxWitn3JA_41JQ90AE
-  
-  // Create the connection client
-  const db = supabase.createClient(supabaseUrl, supabaseKey);
-  
-  console.log('Supabase connected:', supabase);
-        <pre id="supabase-status">Checking Supabase connection...</pre>
+    <pre id="supabase-status">Checking Supabase connection...</pre>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Get createClient from the global Supabase library
   const { createClient } = supabase;
 
-  const supabaseUrl = 'https://atwcqongbgjkajjzeupt.supabase.co';
+  const supabaseUrl = 'https://satvqcatnilppxwretrb.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0d2Nxb25nYmdqa2FqanpldXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NjMzNDgsImV4cCI6MjEwNjQzOTM0OH0.lxvHVADk3kfa_ll44j-xLnXjI04WLS9m7nny3jq3XHY';
 
-  // Use a different variable name — NOT "supabase"
-  const base urlcreateClient(supabaseUrl, supabaseKey);
+  const db = createClient(supabaseUrl, supabaseKey);
 
   (async () => {
     const statusEl = document.getElementById('supabase-status');
-
     try {
-      // This makes a real network request to Supabase Auth
       const { data, error } = await db.auth.getUser();
-
       if (error) {
-        // AuthSessionMissingError is normal when nobody is logged in.
-        // It still proves Supabase responded.
         if (error.name === 'AuthSessionMissingError') {
           statusEl.textContent = '✅ Supabase connection works (no user logged in)';
         } else {
-          statusEl.textContent = '❌ Supabase returned an error: ' + error.message;
+          statusEl.textContent = '❌ Supabase error: ' + error.message;
         }
       } else {
         statusEl.textContent = '✅ Supabase connection works. User: ' + (data.user?.email || 'none');
       }
     } catch (e) {
-      // This catches network failures, wrong URL, offline, etc.
       statusEl.textContent = '❌ Could not reach Supabase: ' + e.message;
     }
   })();
 </script>
-    </script>
 </body>
 </html>
