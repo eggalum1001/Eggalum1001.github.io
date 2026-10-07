@@ -2554,10 +2554,18 @@ Let me ask a few quick questions.`;
                 assignedWorker: null
             };
             
-            // Save job
-            let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-            jobs.push(jobData);
-            localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+            // Save job to supabase
+const { error } = await db.from('jobs').insert([{
+    title: jobData.title,
+    service: jobData.service,
+    description: jobData.description,
+    budget: jobData.budget,
+    location: jobData.location,
+    date: jobData.date,
+    shared_code: jobData.sharedCode,
+    status: jobData.status
+}]);
+if (error) console.error('Insert error:', error);
             
             // Save code
             activeCodes[sharedCode] = {
@@ -2566,8 +2574,7 @@ Let me ask a few quick questions.`;
                 clientLocation: jobData.location,
                 createdAt: new Date()
             };
-            localStorage.setItem('outfixCodes', JSON.stringify(activeCodes));
-            
+            localStorage.setItem('outfixCodes',JSON.stringify(activeCodes));
             // Reset form and show code modal
             jobForm.reset();
             modal.style.display = 'none';
