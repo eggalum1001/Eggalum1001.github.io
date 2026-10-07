@@ -2530,7 +2530,7 @@ Let me ask a few quick questions.`;
         
         const jobForm = document.getElementById('jobForm');
         
-        jobForm.addEventListener('submit', function(e) {
+        jobForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const serviceType = document.getElementById('serviceType').value;
@@ -2678,10 +2678,6 @@ if (error) console.error('Insert error:', error);
                         jobs = jobs.filter(job => job.id !== jobId);
                         localStorage.setItem('outfixJobs', JSON.stringify(jobs));
                         
-                        // Remove code
-                        const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
-                        delete codes[code];
-                        localStorage.setItem('outfixCodes', JSON.stringify(codes));
                         
                         timerDisplay.innerHTML = `
                             <h4><i class="fas fa-times-circle"></i> No Workers Available</h4>
