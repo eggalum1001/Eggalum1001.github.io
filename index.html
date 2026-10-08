@@ -2559,7 +2559,7 @@ const { error } = await db.from('jobs').insert([{
     title: jobData.title,
     service: jobData.service,
     description: jobData.description,
-    budget: jobData.budget,
+    budget: Number(jobData.budget),
     location: jobData.location,
     date: jobData.date,
     shared_code: jobData.sharedCode,
