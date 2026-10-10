@@ -2506,6 +2506,27 @@ Let me ask a few quick questions.`;
                 showNotification('Location retrieved successfully!');
             }, 1500);
         });
+        // Date options
+const asapOption = document.getElementById('asapOption');
+const specificDateOption = document.getElementById('specificDateOption');
+const jobDateInput = document.getElementById('jobDate');
+let isAsap = true;
+
+asapOption.addEventListener('click', function() {
+    asapOption.classList.add('active');
+    specificDateOption.classList.remove('active');
+    jobDateInput.style.display = 'none';
+    jobDateInput.required = false;
+    isAsap = true;
+});
+
+specificDateOption.addEventListener('click', function() {
+    specificDateOption.classList.add('active');
+    asapOption.classList.remove('active');
+    jobDateInput.style.display = 'block';
+    jobDateInput.required = true;
+    isAsap = false;
+});
 
         // File upload preview
         const mediaUpload = document.getElementById('mediaUpload');
@@ -2554,7 +2575,7 @@ Let me ask a few quick questions.`;
                 budget: document.getElementById('budget').value,
                 workers: document.getElementById('workersNeeded').value,
                 location: document.getElementById('jobLocation').value,
-                date: document.getElementById('jobDate').value,
+                date: isAsap ? 'ASAP' : document.getElementById('jobDate').value,
                 allowCompanions: document.getElementById('allowCompanions').checked,
                 agreedToWaitlist: document.getElementById('agreeWaitlist').checked,
                 status: 'searching', // New status: searching for workers
