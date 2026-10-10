@@ -2559,7 +2559,122 @@ specificDateOption.addEventListener('click', function() {
 
         // ==================== JOB FORM SUBMISSION ====================
         
-        const jobForm = document.getElementById('jobForm');
+       async function displayJobs() {
+    const jobsList = document.getElementById('jobsList');
+
+    const { data: jobs, error } = await db
+        .from('jobs')
+        .select('*')
+        .order('posted_at', { ascending: false });
+
+    if (error) {
+        console.error('Load error:', error);
+        jobsList.innerHTML = `<p style="color: var(--danger);">Could not load jobs.</p>`;
+        return;
+    }
+
+    if (!jobs || jobs.length === 0) {
+        jobsList.innerHTML = `
+            <div class="no-jobs" style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-tasks" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>No jobs yet</h3>
+                <p>Post your first job to get started</p>
+            </div>
+        `;
+        return;
+    }
+
+    jobsList.innerHTML = '';
+
+    jobs.forEach(job => {
+        const timePassed = calculateTimePassed(job.posted_at);
+
+        const jobCard = document.createElement('div');
+        jobCard.className = 'job-card';
+
+        let workerSection = '';
+        if (job.assigned_worker) {
+            workerSection = `
+                <div class="assigned-worker">
+                    <div class="assigned-worker-img" style="background-image: url('${job.assigned_worker.photo}');"></div>
+                    <div class="assigned-worker-info">
+                        <h4>${job.assigned_worker.name}</h4>
+                        <p>${job.assigned_worker.specialty} • ${job.assigned_worker.phone}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        let waitlistSection = '';
+        if (job.status === 'waitlisted' && job.wait_time) {
+            waitlistSection = `
+                <div class="waitlist-banner" style="margin: 15px 0;">
+                    <i class="fas fa-hourglass-half"></i>
+                    <div class="waitlist-banner-content">
+                        <h4>On Waitlist</h4>
+                        <p>Expected wait time: <strong>${job.wait_time}</strong></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        let codeSection = '';
+        if (job.shared_code && job.status !== 'completed' && job.status !== 'waitlisted') {
+            codeSection = `
+                <div class="shared-code-box" style="padding: 15px; margin: 15px 0;">
+                    <h3 style="font-size: 0.8rem;">Your Job Code</h3>
+                    <div class="shared-code" style="font-size: 1.8rem; letter-spacing: 5px; padding: 10px; margin: 10px 0;">${job.shared_code}</div>
+                    <p class="shared-code-hint" style="font-size: 0.8rem;">Share with your worker for verification</p>
+                </div>
+            `;
+        }
+
+        const statusDisplay = job.status === 'searching'
+            ? 'Searching'
+            : job.status.charAt(0).toUpperCase() + job.status.slice(1);
+
+        jobCard.innerHTML = `
+            <div class="job-header">
+                <div class="job-title">${job.title}</div>
+                <div class="job-status ${job.status}">${statusDisplay}</div>
+            </div>
+            <div class="job-details">
+                <div class="job-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>${job.service.charAt(0).toUpperCase() + job.service.slice(1).replace('-', ' ')}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${job.location}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>$${job.budget}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-users"></i>
+                    <span>${job.workers} worker(s)</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-calendar"></i>
+                    <span>${job.date}</span>
+                </div>
+            </div>
+            ${workerSection}
+            ${waitlistSection}
+            ${codeSection}
+            <div class="job-description">
+                <p style="white-space: pre-line;">${job.description}</p>
+            </div>
+            <div class="job-timer">
+                <i class="fas fa-clock"></i>
+                <span>Posted ${timePassed}</span>
+            </div>
+        `;
+
+        jobsList.appendChild(jobCard);
+    });
+       } const jobForm = document.getElementById('jobForm');
         
         jobForm.addEventListener('submit', async function(e) {
             e.preventDefault();
