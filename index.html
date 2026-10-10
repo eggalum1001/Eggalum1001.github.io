@@ -3101,23 +3101,6 @@ if (error) console.error('Insert error:', error);
 
   const db = createClient(supabaseUrl, supabaseKey);
 
-  (async () => {
-    const statusEl = document.getElementById('supabase-status');
-    try {
-      const { data, error } = await db.auth.getUser();
-      if (error) {
-        if (error.name === 'AuthSessionMissingError') {
-          statusEl.textContent = '✅ Supabase connection works (no user logged in)';
-        } else {
-          statusEl.textContent = '❌ Supabase error: ' + error.message;
-        }
-      } else {
-        statusEl.textContent = '✅ Supabase connection works. User: ' + (data.user?.email || 'none');
-      }
-    } catch (e) {
-      statusEl.textContent = '❌ Could not reach Supabase: ' + e.message;
-    }
-  })();
 </script>
 </script>
 </body>
