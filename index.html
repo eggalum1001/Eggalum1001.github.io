@@ -3001,21 +3001,7 @@ if (error) console.error('Insert error:', error);
                     </div>
                     <div class="job-timer">
                         <i class="fas fa-clock"></i>
-                        <span>Posted ${timePassed}</span>
-                    </div>
-                    <div class="job-actions">
-                        ${job.status === 'pending' || job.status === 'searching' ? `
-                            <button class="btn btn-outline edit-job" data-id="${job.id}">Edit</button>
-                            <button class="btn btn-danger cancel-job" data-id="${job.id}">Cancel</button>
-                        ` : ''}
-                        ${job.status === 'waitlisted' ? `
-                            <button class="btn btn-warning remove-waitlist" data-id="${job.id}">Remove from Waitlist</button>
-                        ` : ''}
-                        ${job.status === 'accepted' ? `
-                            <button class="btn btn-success complete-job" data-id="${job.id}">Mark Complete</button>
-                        ` : ''}
-                    </div>
-                `;
+
                 
 async function displayJobs() {
     const jobsList = document.getElementById('jobsList');
@@ -3338,7 +3324,6 @@ async function displayJobs() {
 
   const db = createClient(supabaseUrl, supabaseKey);
 
-</script>
 </script>
 </body>
 </html>
