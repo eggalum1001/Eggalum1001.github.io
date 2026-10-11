@@ -2566,6 +2566,8 @@ specificDateOption.addEventListener('click', function() {
         .from('jobs')
         .select('*')
         .order('posted_at', { ascending: false });
+           
+           console.log('displayJobs ran. jobs:', jobs, 'error:', error);
 
     if (error) {
         console.error('Load error:', error);
