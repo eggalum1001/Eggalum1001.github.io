@@ -3187,35 +3187,54 @@ async function displayJobs() {
 
         // ==================== MOBILE MENU ====================
         
-        document.querySelector('.mobile-menu').addEventListener('click', function() {
-            const navLinks = document.querySelector('.nav-links');
-            const authButtons = document.querySelector('.auth-buttons');
-            
-            if (navLinks.style.display === 'flex') {
-                navLinks.style.display = 'none';
-                authButtons.style.display = 'none';
-            } else {
-                navLinks.style.display = 'flex';
-                authButtons.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                authButtons.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '80px';
-                navLinks.style.left = '0';
-                navLinks.style.width = '100%';
-                navLinks.style.backgroundColor = 'white';
-                navLinks.style.padding = '20px';
-                navLinks.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
-                
-                authButtons.style.position = 'absolute';
-                authButtons.style.top = '320px';
-                authButtons.style.left = '0';
-                authButtons.style.width = '100%';
-                authButtons.style.padding = '20px';
-                authButtons.style.backgroundColor = 'white';
-                authButtons.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
-            }
-        });
+        // ==================== MOBILE MENU ====================
+
+const mobileMenuBtn = document.querySelector('.mobile-menu');
+const navLinksEl = document.querySelector('.nav-links');
+const authButtonsEl = document.querySelector('.auth-buttons');
+
+let mobileMenuOpen = false;
+
+mobileMenuBtn.addEventListener('click', function() {
+    mobileMenuOpen = !mobileMenuOpen;
+
+    if (mobileMenuOpen) {
+        navLinksEl.style.display = 'flex';
+        authButtonsEl.style.display = 'flex';
+        navLinksEl.style.flexDirection = 'column';
+        authButtonsEl.style.flexDirection = 'column';
+        navLinksEl.style.position = 'absolute';
+        navLinksEl.style.top = '80px';
+        navLinksEl.style.left = '0';
+        navLinksEl.style.width = '100%';
+        navLinksEl.style.backgroundColor = 'white';
+        navLinksEl.style.padding = '20px';
+        navLinksEl.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
+        navLinksEl.style.zIndex = '999';
+
+        authButtonsEl.style.position = 'absolute';
+        authButtonsEl.style.top = '320px';
+        authButtonsEl.style.left = '0';
+        authButtonsEl.style.width = '100%';
+        authButtonsEl.style.padding = '20px';
+        authButtonsEl.style.backgroundColor = 'white';
+        authButtonsEl.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
+        authButtonsEl.style.zIndex = '999';
+    } else {
+        closeMobileMenu();
+    }
+});
+
+function closeMobileMenu() {
+    mobileMenuOpen = false;
+    navLinksEl.style.display = '';
+    authButtonsEl.style.display = '';
+}
+
+// Close the menu automatically when any nav link inside it is tapped
+document.querySelectorAll('.nav-links a, .auth-buttons a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+});
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
