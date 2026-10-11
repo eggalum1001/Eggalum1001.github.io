@@ -2731,6 +2731,7 @@ if (error) console.error('Insert error:', error);
             
             // Start the countdown timer
             startJobSearchTimer(jobData.id, sharedCode);
+            displayJobs();
             
             showNotification('Job posted! Notifying workers in your area...');
         });
