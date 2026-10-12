@@ -2920,9 +2920,27 @@ async function displayJobs() {
                 <i class="fas fa-clock"></i>
                 <span>Posted ${timePassed}</span>
             </div>
+            <div class="job-actions">
+    ${job.status === 'searching' ? `
+        <button class="btn btn-danger cancel-job" data-id="${job.id}">Cancel</button>
+    ` : ''}
+    ${job.status === 'accepted' ? `
+        <button class="btn btn-success complete-job" data-id="${job.id}">Mark Complete</button>
+    ` : ''}
+</div>
         `;
 
         jobsList.appendChild(jobCard);
+    });document.querySelectorAll('.cancel-job').forEach(btn => {
+        btn.addEventListener('click', function() {
+            cancelJob(this.getAttribute('data-id'));
+        });
+    });
+
+    document.querySelectorAll('.complete-job').forEach(btn => {
+        btn.addEventListener('click', function() {
+            completeJob(this.getAttribute('data-id'));
+        });
     });
 }
 
@@ -2940,16 +2958,25 @@ async function displayJobs() {
             return `${diffDays} day(s) ago`;
         }
 
-        function cancelJob(jobId) {
-            if (confirm('Are you sure you want to cancel this job?')) {
-                let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-                const job = jobs.find(j => j.id == jobId);
-                
-                if (job && job.sharedCode) {
-                    const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
-                    delete codes[job.sharedCode];
-                    localStorage.setItem('outfixCodes', JSON.stringify(codes));
-                }
+        async function cancelJob(jobId) {
+    if (!confirm('Are you sure you want to cancel this job?')) return;
+
+    const { error } = await db.from('jobs').delete().eq('id', jobId);
+
+    if (error) {
+        console.error('Delete error:', error);
+        showNotification('Could not cancel job. Please try again.');
+        return;
+    }
+
+    if (jobSearchTimers[jobId]) {
+        clearInterval(jobSearchTimers[jobId]);
+        delete jobSearchTimers[jobId];
+    }
+
+    displayJobs();
+    showNotification('Job cancelled successfully');
+        }
                 
                 // Clear any active timer
                 if (jobSearchTimers[jobId]) {
@@ -2979,18 +3006,22 @@ async function displayJobs() {
             }
         }
 
-        function completeJob(jobId) {
-            let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-            const jobIndex = jobs.findIndex(job => job.id == jobId);
-            
-            if (jobIndex !== -1) {
-                jobs[jobIndex].status = 'completed';
-                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
-                displayJobs();
-                showNotification('Job marked as completed. Payment has been released to the worker.');
-            }
-        }
+        async function completeJob(jobId) {
+    const { error } = await db
+        .from('jobs')
+        .update({ status: 'completed' })
+        .eq('id', jobId);
 
+    if (error) {
+        console.error('Update error:', error);
+        showNotification('Could not complete job. Please try again.');
+        return;
+    }
+
+    displayJobs();
+    showNotification('Job marked as completed.');
+        }
+        function RemoveFromWaitlist(jobId) {
         // ==================== NOTIFICATIONS ====================
         
         function showNotification(message) {
