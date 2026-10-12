@@ -2584,19 +2584,31 @@ specificDateOption.addEventListener('click', function() {
             };
             
             // Save job to supabase
-const { error } = await db.from('jobs').insert([{
-    title: jobData.title,
-    service: jobData.service,
-    description: jobData.description,
-    budget: Number(jobData.budget),
-    workers: Number(jobData.workers),
-    location: jobData.location,
-    date: jobData.date,
-    shared_code: jobData.sharedCode,
-    status: jobData.status,
-    posted_at: new Date().toISOString()
-}]);
-if (error) console.error('Insert error:', error);
+const { data: insertedJob, error } = await db
+    .from('jobs')
+    .insert([{
+        title: jobData.title,
+        service: jobData.service,
+        description: jobData.description,
+        budget: Number(jobData.budget),
+        workers: Number(jobData.workers),
+        location: jobData.location,
+        date: jobData.date,
+        shared_code: jobData.sharedCode,
+        status: jobData.status,
+        posted_at: new Date().toISOString()
+    }])
+    .select()
+    .single();
+
+if (error) {
+    console.error('Insert error:', error);
+    showNotification('Could not post job. Please try again.');
+    return;
+}
+
+const jobId = insertedJob.id;
+console.log('Job inserted with ID:', jobId);
             
             // Save code
             activeCodes[sharedCode] = {
@@ -2613,7 +2625,7 @@ if (error) console.error('Insert error:', error);
             document.getElementById('codeModal').style.display = 'block';
             
             // Start the countdown timer
-            startJobSearchTimer(jobData.id, sharedCode);
+            startJobSearchTimer(jobDId, sharedCode);
             displayJobs();
             
             showNotification('Job posted! Notifying workers in your area...');
