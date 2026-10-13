@@ -2932,6 +2932,17 @@ async function displayJobs() {
 
         jobsList.appendChild(jobCard);
     });
+    document.querySelectorAll('.cancel-job').forEach(btn => {
+        btn.addEventListener('click', function() {
+            cancelJob(this.getAttribute('data-id'));
+        });
+    });
+
+    document.querySelectorAll('.complete-job').forEach(btn => {
+        btn.addEventListener('click', function() {
+            completeJob(this.getAttribute('data-id'));
+        });
+    });
 }
 
         function calculateTimePassed(postedAt) {
