@@ -2959,28 +2959,24 @@ async function displayJobs() {
             return `${diffDays} day(s) ago`;
         }
 
-        function cancelJob(jobId) {
-            if (confirm('Are you sure you want to cancel this job?')) {
-                let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-                const job = jobs.find(j => j.id == jobId);
-                
-                if (job && job.sharedCode) {
-                    const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
-                    delete codes[job.sharedCode];
-                    localStorage.setItem('outfixCodes', JSON.stringify(codes));
-                }
-                
-                // Clear any active timer
-                if (jobSearchTimers[jobId]) {
-                    clearInterval(jobSearchTimers[jobId]);
-                    delete jobSearchTimers[jobId];
-                }
-                
-                jobs = jobs.filter(job => job.id != jobId);
-                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
-                displayJobs();
-                showNotification('Job cancelled successfully');
-            }
+        async function cancelJob(jobId) {
+    if (!confirm('Are you sure you want to cancel this job?')) return;
+
+    const { error } = await db.from('jobs').delete().eq('id', jobId);
+
+    if (error) {
+        console.error('Delete error:', error);
+        showNotification('Could not cancel job. Please try again.');
+        return;
+    }
+
+    if (jobSearchTimers[jobId]) {
+        clearInterval(jobSearchTimers[jobId]);
+        delete jobSearchTimers[jobId];
+    }
+
+    displayJobs();
+    showNotification('Job cancelled successfully');
         }
 
         function removeFromWaitlist(jobId) {
@@ -2996,7 +2992,6 @@ async function displayJobs() {
                 displayJobs();
                 showNotification('Removed from waitlist');
             }
-        }
 
         function completeJob(jobId) {
             let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
