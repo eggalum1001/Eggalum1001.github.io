@@ -2994,16 +2994,21 @@ async function displayJobs() {
             }
         }
 
-        function completeJob(jobId) {
-            let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-            const jobIndex = jobs.findIndex(job => job.id == jobId);
-            
-            if (jobIndex !== -1) {
-                jobs[jobIndex].status = 'completed';
-                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
-                displayJobs();
-                showNotification('Job marked as completed. Payment has been released to the worker.');
-            }
+        async function completeJob(jobId) {
+    const { error } = await db
+        .from('jobs')
+        .update({ status: 'completed' })
+        .eq('id', jobId);
+
+    if (error) {
+        console.error('Update error:', error);
+        showNotification('Could not complete job. Please try again.');
+        return;
+    }
+
+    displayJobs();
+    showNotification('Job marked as completed.');
+        }
         }
 
         // ==================== NOTIFICATIONS ====================
