@@ -2962,7 +2962,13 @@ async function displayJobs() {
         async function cancelJob(jobId) {
     if (!confirm('Are you sure you want to cancel this job?')) return;
 
-    const { error } = await db.from('jobs').delete().eq('id', jobId);
+    const { data: deletedRows, error } = await db
+    .from('jobs')
+    .delete()
+    .eq('id', Number(jobId))
+    .select();
+
+console.log('Deleted rows:', deletedRows, 'Error:', error);
 
     if (error) {
         console.error('Delete error:', error);
