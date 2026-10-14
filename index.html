@@ -2625,7 +2625,7 @@ console.log('Job inserted with ID:', jobId);
             document.getElementById('codeModal').style.display = 'block';
             
             // Start the countdown timer
-            startJobSearchTimer(jobId, sharedCode, jobData.agreedToWaitlist, jobData.service);
+            startJobSearchTimer(jobId, sharedCode);
             displayJobs();
             
             showNotification('Job posted! Notifying workers in your area...');
@@ -2705,108 +2705,35 @@ console.log('Job inserted with ID:', jobId);
                             jobId: jobId,
                             service: jobs[jobIndex].service,
                             waitTime: '2-3 hours',
-function startJobSearchTimer(jobId, code, agreedToWaitlist, service) {
-    const timerDisplay = document.getElementById('searchingTimer');
-    const countdownDisplay = document.getElementById('countdownDisplay');
-
-    timerDisplay.style.display = 'block';
-
-    let secondsLeft = WAITLIST_TIMEOUT;
-
-    if (jobSearchTimers[jobId]) {
-        clearInterval(jobSearchTimers[jobId]);
-    }
-
-    function updateCountdown() {
-        const mins = Math.floor(secondsLeft / 60);
-        const secs = secondsLeft % 60;
-        countdownDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
-
-    updateCountdown();
-
-    jobSearchTimers[jobId] = setInterval(async () => {
-        secondsLeft--;
-        updateCountdown();
-
-        // Simulate a worker accepting
-        if (secondsLeft > 30 && Math.random() < 0.015) {
-            clearInterval(jobSearchTimers[jobId]);
-            delete jobSearchTimers[jobId];
-
-            timerDisplay.style.display = 'none';
-
-            const specialty = service.charAt(0).toUpperCase() + service.slice(1).replace('-', ' ');
-
-            const { error } = await db
-                .from('jobs')
-                .update({
-                    status: 'accepted',
-                    assigned_worker: {
-                        name: 'Michael Johnson',
-                        specialty: specialty,
-                        photo: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                        phone: '+1 (555) 123-4567'
+                            addedAt: new Date()
+                        });
+                        localStorage.setItem('outfixWaitlist', JSON.stringify(waitlist));
+                        
+                        timerDisplay.innerHTML = `
+                            <h4><i class="fas fa-hourglass-half"></i> Added to Waitlist</h4>
+                            <p>No workers were available immediately. You've been added to our waitlist.</p>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning); margin: 10px 0;">Expected Wait: 2-3 hours</div>
+                            <p style="font-size: 0.85rem;">We'll notify you as soon as a worker becomes available.</p>
+                        `;
+                        
+                        showNotification('No workers available right now. Added to waitlist - expected wait: 2-3 hours');
+                    } else {
+                        // User didn't agree to waitlist
+                        jobs = jobs.filter(job => job.id !== jobId);
+                        localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+                        
+                        
+                        timerDisplay.innerHTML = `
+                            <h4><i class="fas fa-times-circle"></i> No Workers Available</h4>
+                            <p>Unfortunately, no workers were available within the time limit. Please try again later.</p>
+                        `;
+                        
+                        showNotification('No workers available. Please try again later.');
                     }
-                })
-                .eq('id', Number(jobId));
-
-            if (error) {
-                console.error('Accept update error:', error);
-                return;
-            }
-
-            displayJobs();
-            showNotification(`Great! Michael Johnson accepted your job. Code: ${code}`);
-            return;
+                }
+            }, 1000);
         }
 
-        if (secondsLeft <= 0) {
-            clearInterval(jobSearchTimers[jobId]);
-            delete jobSearchTimers[jobId];
-
-            if (agreedToWaitlist) {
-                const { error } = await db
-                    .from('jobs')
-                    .update({ status: 'waitlisted', wait_time: '2-3 hours' })
-                    .eq('id', Number(jobId));
-
-                if (error) {
-                    console.error('Waitlist update error:', error);
-                    return;
-                }
-
-                timerDisplay.innerHTML = `
-                    <h4><i class="fas fa-hourglass-half"></i> Added to Waitlist</h4>
-                    <p>No workers were available immediately. You've been added to our waitlist.</p>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning); margin: 10px 0;">Expected Wait: 2-3 hours</div>
-                    <p style="font-size: 0.85rem;">We'll notify you as soon as a worker becomes available.</p>
-                `;
-
-                displayJobs();
-                showNotification('No workers available right now. Added to waitlist - expected wait: 2-3 hours');
-            } else {
-                const { error } = await db
-                    .from('jobs')
-                    .delete()
-                    .eq('id', Number(jobId));
-
-                if (error) {
-                    console.error('Delete error:', error);
-                    return;
-                }
-
-                timerDisplay.innerHTML = `
-                    <h4><i class="fas fa-times-circle"></i> No Workers Available</h4>
-                    <p>Unfortunately, no workers were available within the time limit. Please try again later.</p>
-                `;
-
-                displayJobs();
-                showNotification('No workers available. Please try again later.');
-            }
-        }
-    }, 1000);
-                                         }
         // ==================== CODE MODAL ====================
         
         document.querySelector('.close-code-modal').addEventListener('click', function() {
