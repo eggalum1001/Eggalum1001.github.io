@@ -2757,51 +2757,54 @@ if (codeError) console.error('Code insert error:', codeError);
 
         // ==================== VERIFY WORKER ====================
         
-        function verifyCode(inputId, resultId) {
-            const input = document.getElementById(inputId);
-            const result = document.getElementById(resultId);
-            const code = input.value.trim().toUpperCase();
-            
-            if (code.length !== 6) {
-                result.innerHTML = `
-                    <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
-                        <i class="fas fa-exclamation-triangle"></i> Please enter a 6-character code
-                    </div>
-                `;
-                return;
-            }
-            
-            const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
-            
-            if (codes[code]) {
-                const codeData = codes[code];
-                result.innerHTML = `
-                    <div style="background: #d4edda; color: #155724; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-                        <h4 style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Worker Verified!</h4>
-                        <p><strong>Job:</strong> ${codeData.jobTitle}</p>
-                        <p><strong>Location:</strong> ${codeData.clientLocation}</p>
-                        <p style="margin-top: 10px; font-size: 0.9rem;"><i class="fas fa-shield-alt"></i> This worker is authorized for this job.</p>
-                    </div>
-                `;
-                showNotification('Worker verified successfully!');
-            } else {
-                result.innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-                        <h4 style="margin-bottom: 10px;"><i class="fas fa-times-circle"></i> Invalid Code</h4>
-                        <p>This code does not match any active jobs. Please verify and try again.</p>
-                    </div>
-                `;
-                showNotification('Invalid code. Please check and try again.');
-            }
-        }
+        
+                async function verifyCode(inputId, resultId) {
+    const input = document.getElementById(inputId);
+    const result = document.getElementById(resultId);
+    const code = input.value.trim().toUpperCase();
 
-        document.getElementById('verifyCodeBtn').addEventListener('click', function() {
-            verifyCode('verifyCodeInput', 'verifyResult');
-        });
+    if (code.length !== 6) {
+        result.innerHTML = `
+            <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+                <i class="fas fa-exclamation-triangle"></i> Please enter a 6-character code
+            </div>
+        `;
+        return;
+    }
 
-        document.getElementById('verifyCodeBtn2').addEventListener('click', function() {
-            verifyCode('verifyCodeInput2', 'verifyResult2');
-        });
+    const { data: codeRows, error } = await db
+        .from('codes')
+        .select('*')
+        .eq('code', code)
+        .limit(1);
+
+    if (error) {
+        console.error('Verify error:', error);
+        result.innerHTML = `<p style="color: var(--danger);">Could not verify code. Please try again.</p>`;
+        return;
+    }
+
+    if (codeRows && codeRows.length > 0) {
+        const codeData = codeRows[0];
+        result.innerHTML = `
+            <div style="background: #d4edda; color: #155724; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Worker Verified!</h4>
+                <p><strong>Job:</strong> ${codeData.job_title}</p>
+                <p><strong>Location:</strong> ${codeData.client_location}</p>
+                <p style="margin-top: 10px; font-size: 0.9rem;"><i class="fas fa-shield-alt"></i> This worker is authorized for this job.</p>
+            </div>
+        `;
+        showNotification('Worker verified successfully!');
+    } else {
+        result.innerHTML = `
+            <div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 10px;"><i class="fas fa-times-circle"></i> Invalid Code</h4>
+                <p>This code does not match any active jobs. Please verify and try again.</p>
+            </div>
+        `;
+        showNotification('Invalid code. Please check and try again.');
+    }
+                }
 
         // ==================== JOB DISPLAY ====================
         
