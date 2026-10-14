@@ -2625,7 +2625,7 @@ console.log('Job inserted with ID:', jobId);
             document.getElementById('codeModal').style.display = 'block';
             
             // Start the countdown timer
-            startJobSearchTimer(jobId, sharedCode);
+            startJobSearchTimer(jobId, sharedCode, jobData.agreedToWaitlist, jobData.service);
             displayJobs();
             
             showNotification('Job posted! Notifying workers in your area...');
