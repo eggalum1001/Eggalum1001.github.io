@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -924,9 +924,6 @@
         }
 
         /* Job Listings */
-        .job-listings {
-            display: none;
-        }
 
         .job-card {
             background: white;
@@ -1425,10 +1422,20 @@
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="jobDate">Preferred Date</label>
-                    <input type="date" id="jobDate" class="form-control" required>
-                </div>
+             <div class="form-group">
+    <label>When do you need this?</label>
+    <div class="location-options">
+        <div class="location-option active" id="asapOption">
+            <i class="fas fa-bolt"></i>
+            <p>ASAP</p>
+        </div>
+        <div class="location-option" id="specificDateOption">
+            <i class="fas fa-calendar-alt"></i>
+            <p>Pick a Date</p>
+        </div>
+    </div>
+    <input type="date" id="jobDate" class="form-control" style="display: none;">
+</div>
                 
                 <div class="checkbox-group">
                     <input type="checkbox" id="allowCompanions">
@@ -1983,6 +1990,7 @@
 
         // ==================== TAB NAVIGATION ====================
         
+        
         document.querySelectorAll('.tab-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -2496,6 +2504,27 @@ Let me ask a few quick questions.`;
                 showNotification('Location retrieved successfully!');
             }, 1500);
         });
+        // Date options
+const asapOption = document.getElementById('asapOption');
+const specificDateOption = document.getElementById('specificDateOption');
+const jobDateInput = document.getElementById('jobDate');
+let isAsap = true;
+
+asapOption.addEventListener('click', function() {
+    asapOption.classList.add('active');
+    specificDateOption.classList.remove('active');
+    jobDateInput.style.display = 'none';
+    jobDateInput.required = false;
+    isAsap = true;
+});
+
+specificDateOption.addEventListener('click', function() {
+    specificDateOption.classList.add('active');
+    asapOption.classList.remove('active');
+    jobDateInput.style.display = 'block';
+    jobDateInput.required = true;
+    isAsap = false;
+});
 
         // File upload preview
         const mediaUpload = document.getElementById('mediaUpload');
@@ -2530,7 +2559,7 @@ Let me ask a few quick questions.`;
         
         const jobForm = document.getElementById('jobForm');
         
-        jobForm.addEventListener('submit', function(e) {
+        jobForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const serviceType = document.getElementById('serviceType').value;
@@ -2544,7 +2573,7 @@ Let me ask a few quick questions.`;
                 budget: document.getElementById('budget').value,
                 workers: document.getElementById('workersNeeded').value,
                 location: document.getElementById('jobLocation').value,
-                date: document.getElementById('jobDate').value,
+                date: isAsap ? 'ASAP' : document.getElementById('jobDate').value,
                 allowCompanions: document.getElementById('allowCompanions').checked,
                 agreedToWaitlist: document.getElementById('agreeWaitlist').checked,
                 status: 'searching', // New status: searching for workers
@@ -2554,10 +2583,32 @@ Let me ask a few quick questions.`;
                 assignedWorker: null
             };
             
-            // Save job
-            let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-            jobs.push(jobData);
-            localStorage.setItem('outfixJobs', JSON.stringify(jobs));
+            // Save job to supabase
+const { data: insertedJob, error } = await db
+    .from('jobs')
+    .insert([{
+        title: jobData.title,
+        service: jobData.service,
+        description: jobData.description,
+        budget: Number(jobData.budget),
+        workers: Number(jobData.workers),
+        location: jobData.location,
+        date: jobData.date,
+        shared_code: jobData.sharedCode,
+        status: jobData.status,
+        posted_at: new Date().toISOString()
+    }])
+    .select()
+    .single();
+
+if (error) {
+    console.error('Insert error:', error);
+    showNotification('Could not post job. Please try again.');
+    return;
+}
+
+const jobId = insertedJob.id;
+console.log('Job inserted with ID:', jobId);
             
             // Save code
             activeCodes[sharedCode] = {
@@ -2566,8 +2617,7 @@ Let me ask a few quick questions.`;
                 clientLocation: jobData.location,
                 createdAt: new Date()
             };
-            localStorage.setItem('outfixCodes', JSON.stringify(activeCodes));
-            
+            localStorage.setItem('outfixCodes',JSON.stringify(activeCodes));
             // Reset form and show code modal
             jobForm.reset();
             modal.style.display = 'none';
@@ -2575,7 +2625,8 @@ Let me ask a few quick questions.`;
             document.getElementById('codeModal').style.display = 'block';
             
             // Start the countdown timer
-            startJobSearchTimer(jobData.id, sharedCode);
+            startJobSearchTimer(jobId, sharedCode);
+            displayJobs();
             
             showNotification('Job posted! Notifying workers in your area...');
         });
@@ -2671,10 +2722,6 @@ Let me ask a few quick questions.`;
                         jobs = jobs.filter(job => job.id !== jobId);
                         localStorage.setItem('outfixJobs', JSON.stringify(jobs));
                         
-                        // Remove code
-                        const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
-                        delete codes[code];
-                        localStorage.setItem('outfixCodes', JSON.stringify(codes));
                         
                         timerDisplay.innerHTML = `
                             <h4><i class="fas fa-times-circle"></i> No Workers Available</h4>
@@ -2757,142 +2804,146 @@ Let me ask a few quick questions.`;
 
         // ==================== JOB DISPLAY ====================
         
-        function displayJobs() {
-            const jobsList = document.getElementById('jobsList');
-            const jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-            
-            if (jobs.length === 0) {
-                jobsList.innerHTML = `
-                    <div class="no-jobs" style="text-align: center; padding: 40px; color: var(--gray);">
-                        <i class="fas fa-tasks" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
-                        <h3>No jobs yet</h3>
-                        <p>Post your first job to get started</p>
+        
+
+                
+async function displayJobs() {
+    const jobsList = document.getElementById('jobsList');
+
+    const { data: jobs, error } = await db
+        .from('jobs')
+        .select('*')
+        .order('posted_at', { ascending: false });
+    
+    console.log('displayJobs ran.jobs:', jobs, 'error:', error);
+
+    if (error) {
+        console.error('Load error:', error);
+        jobsList.innerHTML = `<p style="color: var(--danger);">Could not load jobs.</p>`;
+        return;
+    }
+
+    if (!jobs || jobs.length === 0) {
+        jobsList.innerHTML = `
+            <div class="no-jobs" style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-tasks" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>No jobs yet</h3>
+                <p>Post your first job to get started</p>
+            </div>
+        `;
+        return;
+    }
+
+    jobsList.innerHTML = '';
+
+    jobs.forEach(job => {
+        const timePassed = calculateTimePassed(job.posted_at);
+
+        const jobCard = document.createElement('div');
+        jobCard.className = 'job-card';
+
+        let workerSection = '';
+        if (job.assigned_worker) {
+            workerSection = `
+                <div class="assigned-worker">
+                    <div class="assigned-worker-img" style="background-image: url('${job.assigned_worker.photo}');"></div>
+                    <div class="assigned-worker-info">
+                        <h4>${job.assigned_worker.name}</h4>
+                        <p>${job.assigned_worker.specialty} • ${job.assigned_worker.phone}</p>
                     </div>
-                `;
-                return;
-            }
-            
-            jobsList.innerHTML = '';
-            
-            jobs.forEach(job => {
-                const timePassed = calculateTimePassed(job.postedAt);
-                
-                const jobCard = document.createElement('div');
-                jobCard.className = 'job-card';
-                
-                let workerSection = '';
-                if (job.assignedWorker) {
-                    workerSection = `
-                        <div class="assigned-worker">
-                            <div class="assigned-worker-img" style="background-image: url('${job.assignedWorker.photo}');"></div>
-                            <div class="assigned-worker-info">
-                                <h4>${job.assignedWorker.name}</h4>
-                                <p>${job.assignedWorker.specialty} • ${job.assignedWorker.phone}</p>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                let waitlistSection = '';
-                if (job.status === 'waitlisted' && job.waitTime) {
-                    waitlistSection = `
-                        <div class="waitlist-banner" style="margin: 15px 0;">
-                            <i class="fas fa-hourglass-half"></i>
-                            <div class="waitlist-banner-content">
-                                <h4>On Waitlist</h4>
-                                <p>Expected wait time: <strong>${job.waitTime}</strong></p>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                let codeSection = '';
-                if (job.sharedCode && job.status !== 'completed' && job.status !== 'waitlisted') {
-                    codeSection = `
-                        <div class="shared-code-box" style="padding: 15px; margin: 15px 0;">
-                            <h3 style="font-size: 0.8rem;">Your Job Code</h3>
-                            <div class="shared-code" style="font-size: 1.8rem; letter-spacing: 5px; padding: 10px; margin: 10px 0;">${job.sharedCode}</div>
-                            <p class="shared-code-hint" style="font-size: 0.8rem;">Share with your worker for verification</p>
-                        </div>
-                    `;
-                }
-                
-                const statusDisplay = job.status === 'searching' ? 'Searching' : job.status.charAt(0).toUpperCase() + job.status.slice(1);
-                
-                jobCard.innerHTML = `
-                    <div class="job-header">
-                        <div class="job-title">${job.title}</div>
-                        <div class="job-status ${job.status}">${statusDisplay}</div>
-                    </div>
-                    <div class="job-details">
-                        <div class="job-detail">
-                            <i class="fas fa-tag"></i>
-                            <span>${job.service.charAt(0).toUpperCase() + job.service.slice(1).replace('-', ' ')}</span>
-                        </div>
-                        <div class="job-detail">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${job.location}</span>
-                        </div>
-                        <div class="job-detail">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span>$${job.budget}</span>
-                        </div>
-                        <div class="job-detail">
-                            <i class="fas fa-users"></i>
-                            <span>${job.workers} worker(s)</span>
-                        </div>
-                    </div>
-                    ${workerSection}
-                    ${waitlistSection}
-                    ${codeSection}
-                    <div class="job-description">
-                        <p style="white-space: pre-line;">${job.description}</p>
-                    </div>
-                    <div class="job-timer">
-                        <i class="fas fa-clock"></i>
-                        <span>Posted ${timePassed}</span>
-                    </div>
-                    <div class="job-actions">
-                        ${job.status === 'pending' || job.status === 'searching' ? `
-                            <button class="btn btn-outline edit-job" data-id="${job.id}">Edit</button>
-                            <button class="btn btn-danger cancel-job" data-id="${job.id}">Cancel</button>
-                        ` : ''}
-                        ${job.status === 'waitlisted' ? `
-                            <button class="btn btn-warning remove-waitlist" data-id="${job.id}">Remove from Waitlist</button>
-                        ` : ''}
-                        ${job.status === 'accepted' ? `
-                            <button class="btn btn-success complete-job" data-id="${job.id}">Mark Complete</button>
-                        ` : ''}
-                    </div>
-                `;
-                
-                jobsList.appendChild(jobCard);
-            });
-            
-            document.querySelectorAll('.edit-job').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    showNotification('Edit functionality would open the job in the posting form');
-                });
-            });
-            
-            document.querySelectorAll('.cancel-job').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    cancelJob(this.getAttribute('data-id'));
-                });
-            });
-            
-            document.querySelectorAll('.complete-job').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    completeJob(this.getAttribute('data-id'));
-                });
-            });
-            
-            document.querySelectorAll('.remove-waitlist').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    removeFromWaitlist(this.getAttribute('data-id'));
-                });
-            });
+                </div>
+            `;
         }
+
+        let waitlistSection = '';
+        if (job.status === 'waitlisted' && job.wait_time) {
+            waitlistSection = `
+                <div class="waitlist-banner" style="margin: 15px 0;">
+                    <i class="fas fa-hourglass-half"></i>
+                    <div class="waitlist-banner-content">
+                        <h4>On Waitlist</h4>
+                        <p>Expected wait time: <strong>${job.wait_time}</strong></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        let codeSection = '';
+        if (job.shared_code && job.status !== 'completed' && job.status !== 'waitlisted') {
+            codeSection = `
+                <div class="shared-code-box" style="padding: 15px; margin: 15px 0;">
+                    <h3 style="font-size: 0.8rem;">Your Job Code</h3>
+                    <div class="shared-code" style="font-size: 1.8rem; letter-spacing: 5px; padding: 10px; margin: 10px 0;">${job.shared_code}</div>
+                    <p class="shared-code-hint" style="font-size: 0.8rem;">Share with your worker for verification</p>
+                </div>
+            `;
+        }
+
+        const statusDisplay = job.status === 'searching'
+            ? 'Searching'
+            : job.status.charAt(0).toUpperCase() + job.status.slice(1);
+
+        jobCard.innerHTML = `
+            <div class="job-header">
+                <div class="job-title">${job.title}</div>
+                <div class="job-status ${job.status}">${statusDisplay}</div>
+            </div>
+            <div class="job-details">
+                <div class="job-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>${job.service.charAt(0).toUpperCase() + job.service.slice(1).replace('-', ' ')}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${job.location}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>$${job.budget}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-users"></i>
+                    <span>${job.workers} worker(s)</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-calendar"></i>
+                    <span>${job.date}</span>
+                </div>
+            </div>
+            ${workerSection}
+            ${waitlistSection}
+            ${codeSection}
+            <div class="job-description">
+                <p style="white-space: pre-line;">${job.description}</p>
+            </div>
+            <div class="job-timer">
+                <i class="fas fa-clock"></i>
+                <span>Posted ${timePassed}</span>
+            </div>
+            <div class="job-actions">
+    ${job.status === 'searching' ? `
+        <button class="btn btn-danger cancel-job" data-id="${job.id}">Cancel</button>
+    ` : ''}
+    ${job.status === 'accepted' ? `
+        <button class="btn btn-success complete-job" data-id="${job.id}">Mark Complete</button>
+    ` : ''}
+</div>
+        `;
+
+        jobsList.appendChild(jobCard);
+    });
+    document.querySelectorAll('.cancel-job').forEach(btn => {
+        btn.addEventListener('click', function() {
+            cancelJob(this.getAttribute('data-id'));
+        });
+    });
+
+    document.querySelectorAll('.complete-job').forEach(btn => {
+        btn.addEventListener('click', function() {
+            completeJob(this.getAttribute('data-id'));
+        });
+    });
+}
 
         function calculateTimePassed(postedAt) {
             const now = new Date();
@@ -2908,28 +2959,30 @@ Let me ask a few quick questions.`;
             return `${diffDays} day(s) ago`;
         }
 
-        function cancelJob(jobId) {
-            if (confirm('Are you sure you want to cancel this job?')) {
-                let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-                const job = jobs.find(j => j.id == jobId);
-                
-                if (job && job.sharedCode) {
-                    const codes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
-                    delete codes[job.sharedCode];
-                    localStorage.setItem('outfixCodes', JSON.stringify(codes));
-                }
-                
-                // Clear any active timer
-                if (jobSearchTimers[jobId]) {
-                    clearInterval(jobSearchTimers[jobId]);
-                    delete jobSearchTimers[jobId];
-                }
-                
-                jobs = jobs.filter(job => job.id != jobId);
-                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
-                displayJobs();
-                showNotification('Job cancelled successfully');
-            }
+        async function cancelJob(jobId) {
+    if (!confirm('Are you sure you want to cancel this job?')) return;
+
+    const { data: deletedRows, error } = await db
+    .from('jobs')
+    .delete()
+    .eq('id', Number(jobId))
+    .select();
+
+console.log('Deleted rows:', deletedRows, 'Error:', error);
+
+    if (error) {
+        console.error('Delete error:', error);
+        showNotification('Could not cancel job. Please try again.');
+        return;
+    }
+
+    if (jobSearchTimers[jobId]) {
+        clearInterval(jobSearchTimers[jobId]);
+        delete jobSearchTimers[jobId];
+    }
+
+    displayJobs();
+    showNotification('Job cancelled successfully');
         }
 
         function removeFromWaitlist(jobId) {
@@ -2947,16 +3000,20 @@ Let me ask a few quick questions.`;
             }
         }
 
-        function completeJob(jobId) {
-            let jobs = JSON.parse(localStorage.getItem('outfixJobs')) || [];
-            const jobIndex = jobs.findIndex(job => job.id == jobId);
-            
-            if (jobIndex !== -1) {
-                jobs[jobIndex].status = 'completed';
-                localStorage.setItem('outfixJobs', JSON.stringify(jobs));
-                displayJobs();
-                showNotification('Job marked as completed. Payment has been released to the worker.');
-            }
+        async function completeJob(jobId) {
+    const { error } = await db
+        .from('jobs')
+        .update({ status: 'completed' })
+        .eq('id', jobId);
+
+    if (error) {
+        console.error('Update error:', error);
+        showNotification('Could not complete job. Please try again.');
+        return;
+    }
+
+    displayJobs();
+    showNotification('Job marked as completed.');
         }
 
         // ==================== NOTIFICATIONS ====================
@@ -3053,40 +3110,72 @@ Let me ask a few quick questions.`;
 
         // ==================== MOBILE MENU ====================
         
-        document.querySelector('.mobile-menu').addEventListener('click', function() {
-            const navLinks = document.querySelector('.nav-links');
-            const authButtons = document.querySelector('.auth-buttons');
-            
-            if (navLinks.style.display === 'flex') {
-                navLinks.style.display = 'none';
-                authButtons.style.display = 'none';
-            } else {
-                navLinks.style.display = 'flex';
-                authButtons.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                authButtons.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '80px';
-                navLinks.style.left = '0';
-                navLinks.style.width = '100%';
-                navLinks.style.backgroundColor = 'white';
-                navLinks.style.padding = '20px';
-                navLinks.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
-                
-                authButtons.style.position = 'absolute';
-                authButtons.style.top = '320px';
-                authButtons.style.left = '0';
-                authButtons.style.width = '100%';
-                authButtons.style.padding = '20px';
-                authButtons.style.backgroundColor = 'white';
-                authButtons.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
-            }
-        });
+        // ==================== MOBILE MENU ====================
+
+const mobileMenuBtn = document.querySelector('.mobile-menu');
+const navLinksEl = document.querySelector('.nav-links');
+const authButtonsEl = document.querySelector('.auth-buttons');
+
+let mobileMenuOpen = false;
+
+mobileMenuBtn.addEventListener('click', function() {
+    mobileMenuOpen = !mobileMenuOpen;
+
+    if (mobileMenuOpen) {
+        navLinksEl.style.display = 'flex';
+        authButtonsEl.style.display = 'flex';
+        navLinksEl.style.flexDirection = 'column';
+        authButtonsEl.style.flexDirection = 'column';
+        navLinksEl.style.position = 'absolute';
+        navLinksEl.style.top = '80px';
+        navLinksEl.style.left = '0';
+        navLinksEl.style.width = '100%';
+        navLinksEl.style.backgroundColor = 'white';
+        navLinksEl.style.padding = '20px';
+        navLinksEl.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
+        navLinksEl.style.zIndex = '999';
+
+        authButtonsEl.style.position = 'absolute';
+        authButtonsEl.style.top = '320px';
+        authButtonsEl.style.left = '0';
+        authButtonsEl.style.width = '100%';
+        authButtonsEl.style.padding = '20px';
+        authButtonsEl.style.backgroundColor = 'white';
+        authButtonsEl.style.boxShadow = '0 5px 10px rgba(0,0,0,0.1)';
+        authButtonsEl.style.zIndex = '999';
+    } else {
+        closeMobileMenu();
+    }
+});
+
+function closeMobileMenu() {
+    mobileMenuOpen = false;
+    navLinksEl.style.display = '';
+    authButtonsEl.style.display = '';
+}
+
+// Close the menu automatically when any nav link inside it is tapped
+document.querySelectorAll('.nav-links a, .auth-buttons a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+});
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Outfix loaded with AI assistant ready!');
         });
     </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const { createClient } = supabase;
+
+  const supabaseUrl = 'https://atwcqongbgjkajjzeupt.supabase.co';
+  const supabaseKey = 'sb_publishable_5s9tkMESDP4zKXxWitn3JA_41JQ90AE';
+
+  const db = createClient(supabaseUrl, supabaseKey);
+
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 </body>
-  </html>
+</html>
