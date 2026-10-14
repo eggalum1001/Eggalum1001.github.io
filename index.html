@@ -1975,7 +1975,6 @@ DOCTYPE html>
             return code;
         }
 
-        let activeCodes = JSON.parse(localStorage.getItem('outfixCodes')) || {};
 
         // ==================== DYNAMIC WAITLIST SYSTEM ====================
         
@@ -2610,14 +2609,14 @@ if (error) {
 const jobId = insertedJob.id;
 console.log('Job inserted with ID:', jobId);
             
-            // Save code
-            activeCodes[sharedCode] = {
-                jobId: jobData.id,
-                jobTitle: jobData.title,
-                clientLocation: jobData.location,
-                createdAt: new Date()
-            };
-            localStorage.setItem('outfixCodes',JSON.stringify(activeCodes));
+            // Save code to Supabase
+const { error: codeError } = await db.from('codes').insert([{
+    job_id: jobId,
+    code: sharedCode,
+    job_title: jobData.title,
+    client_location: jobData.location
+}]);
+if (codeError) console.error('Code insert error:', codeError);
             // Reset form and show code modal
             jobForm.reset();
             modal.style.display = 'none';
