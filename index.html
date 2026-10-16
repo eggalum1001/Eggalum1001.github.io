@@ -2805,6 +2805,13 @@ if (codeError) console.error('Code insert error:', codeError);
         showNotification('Invalid code. Please check and try again.');
     }
                 }
+        document.getElementById('verifyCodeBtn').addEventListener('click', function() {
+    verifyCode('verifyCodeInput', 'verifyResult');
+});
+
+document.getElementById('verifyCodeBtn2').addEventListener('click', function() {
+    verifyCode('verifyCodeInput2', 'verifyResult2');
+});
 
         // ==================== JOB DISPLAY ====================
         
