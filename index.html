@@ -1765,6 +1765,78 @@ DOCTYPE html>
     </div>
 
     <!-- Verify Worker Tab -->
+    <!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close-login-modal" style="position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--gray);">&times;</span>
+        <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">
+            <i class="fas fa-sign-in-alt"></i> Log In
+        </h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" class="form-control" required>
+            </div>
+            <div id="loginResult"></div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Log In</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close-login-modal" style="position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--gray);">&times;</span>
+        <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">
+            <i class="fas fa-sign-in-alt"></i> Log In
+        </h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" class="form-control" required>
+            </div>
+            <div id="loginResult"></div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Log In</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal">
+    <div class="modal-content">
+        <span class="close-signup-modal" style="position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--gray);">&times;</span>
+        <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">
+            <i class="fas fa-user-plus"></i> Sign Up
+        </h2>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="signupEmail">Email</label>
+                <input type="email" id="signupEmail" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="signupPassword">Password (min 6 characters)</label>
+                <input type="password" id="signupPassword" class="form-control" required minlength="6">
+            </div>
+            <div id="signupResult"></div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Signup Modal -->
     <div id="verify" class="tab-content">
         <section class="verify-section">
             <div class="container">
