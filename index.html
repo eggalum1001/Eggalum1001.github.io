@@ -3247,6 +3247,99 @@ window.addEventListener('click', function(e) {
     if (e.target === loginModal) loginModal.style.display = 'none';
     if (e.target === signupModal) signupModal.style.display = 'none';
 });
+        // ==================== AUTH: SIGN UP / LOG IN / LOG OUT ====================
+
+const logoutBtn = document.getElementById('logoutBtn');
+const loginResult = document.getElementById('loginResult');
+const signupResult = document.getElementById('signupResult');
+
+let currentUser = null;
+
+function updateAuthUI(user) {
+    currentUser = user;
+
+    if (user) {
+        loginBtn.style.display = 'none';
+        signupBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+    } else {
+        loginBtn.style.display = '';
+        signupBtn.style.display = '';
+        logoutBtn.style.display = 'none';
+    }
+}
+
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    signupResult.innerHTML = '<p style="color: var(--gray);">Creating account...</p>';
+
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+
+    const { data, error } = await db.auth.signUp({ email: email, password: password });
+
+    if (error) {
+        console.error('Signup error:', error);
+        signupResult.innerHTML = `<p style="color: var(--danger);">${error.message}</p>`;
+        return;
+    }
+
+    if (!data.session) {
+        signupResult.innerHTML = '<p style="color: var(--warning);">Account created. Check your email to confirm it, then log in.</p>';
+        return;
+    }
+
+    signupResult.innerHTML = '';
+    signupModal.style.display = 'none';
+    this.reset();
+    updateAuthUI(data.user);
+    showNotification('Welcome! You are now logged in.');
+});
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    loginResult.innerHTML = '<p style="color: var(--gray);">Logging in...</p>';
+
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    const { data, error } = await db.auth.signInWithPassword({ email: email, password: password });
+
+    if (error) {
+        console.error('Login error:', error);
+        loginResult.innerHTML = `<p style="color: var(--danger);">${error.message}</p>`;
+        return;
+    }
+
+    loginResult.innerHTML = '';
+    loginModal.style.display = 'none';
+    this.reset();
+    updateAuthUI(data.user);
+    showNotification('Logged in successfully.');
+});
+
+logoutBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+
+    const { error } = await db.auth.signOut();
+    if (error) {
+        console.error('Logout error:', error);
+        return;
+    }
+
+    updateAuthUI(null);
+    showNotification('Logged out.');
+    displayJobs();
+});
+
+(async () => {
+    const { data } = await db.auth.getUser();
+    updateAuthUI(data.user || null);
+})();
+
+db.auth.onAuthStateChange(function(event, session) {
+    updateAuthUI(session ? session.user : null);
+});
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
