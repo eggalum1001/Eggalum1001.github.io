@@ -3332,15 +3332,11 @@ logoutBtn.addEventListener('click', async function(e) {
     displayJobs();
 });
 
-(async () => {
-    const { data } = await db.auth.getUser();
-    updateAuthUI(data.user || null);
-})();
-
 db.auth.onAuthStateChange(function(event, session) {
-    updateAuthUI(session ? session.user : null);
+    if (event === 'INITIAL_SESSION') {
+        updateAuthUI(session ? session.user : null);
+    }
 });
-
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Outfix loaded with AI assistant ready!');
