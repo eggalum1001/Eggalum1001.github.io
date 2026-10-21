@@ -3334,8 +3334,8 @@ logoutBtn.addEventListener('click', async function(e) {
 
 (async () => {
     const { data } = await db.auth.getSession();
-    updateAuthUI(data.session ? data.session.user : null console.log('updateAuthUI called. user:', user););
-
+    updateAuthUI(data.session ? data.session.user : null);
+console.log('updateAuthUI called. user:', user);
     db.auth.onAuthStateChange((_event, session) => {
         updateAuthUI(session ? session.user : null);
     });
