@@ -3256,6 +3256,7 @@ const signupResult = document.getElementById('signupResult');
 let currentUser = null;
 
 function updateAuthUI(user) {
+    console.log('updateAuthUI called. user:', user);
     currentUser = user;
 
     if (user) {
