@@ -3114,7 +3114,7 @@ console.log('Deleted rows:', deletedRows, 'Error:', error);
 
         // ==================== WORKER REGISTRATION ====================
         
-        const servicesSelect = document.getElementById('workerServices');
+        const servicesSelect = document.getElementById('services');
         const certificationSection = document.getElementById('certificationSection');
 
         servicesSelect.addEventListener('change', function() {
@@ -3167,7 +3167,7 @@ memberForm.addEventListener('submit', async function(e) {
     }
 
     const selectedServices = Array.from(
-        document.getElementById('workerServices').selectedOptions
+        document.getElementById('services').selectedOptions
     ).map(option => option.value);
 
     if (selectedServices.length === 0) {
