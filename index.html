@@ -3135,25 +3135,72 @@ console.log('Deleted rows:', deletedRows, 'Error:', error);
         });
 
         const memberForm = document.getElementById('memberForm');
-        
-        memberForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const memberData = {
-                name: document.getElementById('fullName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                trn: document.getElementById('trn').value,
-                idNumber: document.getElementById('idNumber').value,
-                services: Array.from(document.getElementById('services').selectedOptions).map(option => option.value),
-                experience: document.getElementById('experience').value
-            };
-            
-            console.log('Member application:', memberData);
-            showNotification('Application submitted successfully! We will review your information and get back to you soon.');
-            memberForm.reset();
-            certificationSection.style.display = 'none';
-        });
+
+memberForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!currentUser) {
+        showNotification('Please log in to apply as a worker.');
+        return;
+    }
+
+    // Check if they already have a profile
+    const { data: existing, error: checkError } = await db
+        .from('workers')
+        .select('id, verification_status')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+
+    if (checkError) {
+        console.error('Profile check error:', checkError);
+        showNotification('Could not check your application. Please try again.');
+        return;
+    }
+
+    if (existing) {
+        showNotification(
+            existing.verification_status === 'approved'
+                ? 'You are already an approved worker.'
+                : 'You already have an application on file.'
+        );
+        return;
+    }
+
+    const selectedServices = Array.from(
+        document.getElementById('services').selectedOptions
+    ).map(option => option.value);
+
+    if (selectedServices.length === 0) {
+        showNotification('Please select at least one service.');
+        return;
+    }
+
+    if (selectedServices.length > 2) {
+        showNotification('You can only select a maximum of 2 services.');
+        return;
+    }
+
+    const { error } = await db.from('workers').insert([{
+        user_id: currentUser.id,
+        full_name: document.getElementById('fullName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        trn: document.getElementById('trn').value.trim() || null,
+        id_number: document.getElementById('idNumber').value.trim() || null,
+        services: selectedServices,
+        experience_years: Number(document.getElementById('experience').value) || 0,
+        agreed_to_terms: document.getElementById('agreeTerms').checked
+    }]);
+
+    if (error) {
+        console.error('Worker application error:', error);
+        showNotification('Could not submit application: ' + error.message);
+        return;
+    }
+
+    showNotification('Application submitted! We will review it and get back to you soon.');
+    memberForm.reset();
+    certificationSection.style.display = 'none';
+});
 
         const profileUpload = document.getElementById('profileUpload');
         const profilePicture = document.getElementById('profilePicture');
