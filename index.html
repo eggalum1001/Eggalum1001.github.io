@@ -2876,10 +2876,22 @@ document.getElementById('verifyCodeBtn2').addEventListener('click', function() {
 async function displayJobs() {
     const jobsList = document.getElementById('jobsList');
 
-    const { data: jobs, error } = await db
-        .from('jobs')
-        .select('*')
-        .order('posted_at', { ascending: false });
+   if (!currentUser) {
+    jobsList.innerHTML = `
+        <div class="no-jobs" style="text-align: center; padding: 40px; color: var(--gray);">
+            <i class="fas fa-user-lock" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+            <h3>Please log in</h3>
+            <p>Log in to see your jobs.</p>
+        </div>
+    `;
+    return;
+}
+
+const { data: jobs, error } = await db
+    .from('jobs')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('posted_at', { ascending: false });
     
     console.log('displayJobs ran.jobs:', jobs, 'error:', error);
 
