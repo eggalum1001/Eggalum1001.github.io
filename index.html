@@ -2076,6 +2076,9 @@ DOCTYPE html>
                 if (tabId === 'jobs') {
                     displayJobs();
                 }
+                if (tabId === 'worker-dashboard') {
+    displayAvailableJobs();
+        }
             });
         });
 
@@ -2892,6 +2895,142 @@ document.getElementById('verifyCodeBtn2').addEventListener('click', function() {
 
                 
 async function displayJobs() {
+    // ==================== WORKER DASHBOARD ====================
+
+async function displayAvailableJobs() {
+    const container = document.getElementById('availableJobsList');
+
+    if (!currentUser) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-user-lock" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>Please log in</h3>
+                <p>Log in to see available jobs.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: var(--gray);">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; display: block;"></i>
+            <p>Loading available jobs...</p>
+        </div>
+    `;
+
+    const { data: workerProfile, error: workerError } = await db
+        .from('workers')
+        .select('services, verification_status')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+
+    if (workerError) {
+        console.error('Worker profile check error:', workerError);
+        container.innerHTML = `<p style="color: var(--danger); text-align: center;">Could not load your worker profile.</p>`;
+        return;
+    }
+
+    if (!workerProfile) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-user-plus" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>Not registered as a worker</h3>
+                <p>Use the <strong>Become a Worker</strong> tab to apply first.</p>
+            </div>
+        `;
+        return;
+    }
+
+    if (workerProfile.verification_status !== 'approved') {
+        const msg = workerProfile.verification_status === 'pending'
+            ? 'Your application is under review. You will be able to accept jobs once approved.'
+            : 'Your application was rejected. Please contact support.';
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-hourglass-half" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>Application ${workerProfile.verification_status}</h3>
+                <p>${msg}</p>
+            </div>
+        `;
+        return;
+    }
+
+    if (!workerProfile.services || workerProfile.services.length === 0) {
+        container.innerHTML = `<p style="color: var(--danger); text-align: center;">No services configured on your worker profile.</p>`;
+        return;
+    }
+
+    const { data: jobs, error } = await db
+        .from('jobs')
+        .select('*')
+        .eq('status', 'searching')
+        .neq('user_id', currentUser.id)
+        .in('service', workerProfile.services)
+        .order('posted_at', { ascending: false });
+
+    console.log('Available jobs:', jobs, 'Error:', error);
+
+    if (error) {
+        console.error('Available jobs error:', error);
+        container.innerHTML = `<p style="color: var(--danger); text-align: center;">Could not load jobs.</p>`;
+        return;
+    }
+
+    if (!jobs || jobs.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>No jobs available</h3>
+                <p>There are no searching jobs in your trades right now. Check back soon.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = '';
+
+    jobs.forEach(job => {
+        const timePassed = calculateTimePassed(job.posted_at);
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+            <div class="job-header">
+                <div class="job-title">${job.title}</div>
+                <div class="job-status ${job.status}">Searching</div>
+            </div>
+            <div class="job-details">
+                <div class="job-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>${job.service.charAt(0).toUpperCase() + job.service.slice(1).replace('-', ' ')}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${job.location}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>$${job.budget}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-users"></i>
+                    <span>${job.workers} worker(s)</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-calendar"></i>
+                    <span>${job.date}</span>
+                </div>
+            </div>
+            <div class="job-description">
+                <p style="white-space: pre-line;">${job.description}</p>
+            </div>
+            <div class="job-timer">
+                <i class="fas fa-clock"></i>
+                <span>Posted ${timePassed}</span>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
     const jobsList = document.getElementById('jobsList');
 
    if (!currentUser) {
