@@ -2733,7 +2733,7 @@ if (codeError) console.error('Code insert error:', codeError);
         updateCountdown();
 
         // Simulate a worker accepting
-        if (secondsLeft > 30 && Math.random() < 0.015) {
+                if (secondsLeft > 30 && Math.random() < 0.015) {
             clearInterval(jobSearchTimers[jobId]);
             delete jobSearchTimers[jobId];
 
@@ -2777,28 +2777,7 @@ if (codeError) console.error('Code insert error:', codeError);
                 if (error) {
                     console.error('Waitlist update error:', error);
                     return;
-                }
-
-                timerDisplay.innerHTML = `
-                    <h4><i class="fas fa-hourglass-half"></i> Added to Waitlist</h4>
-                    <p>No workers were available immediately. You've been added to our waitlist.</p>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning); margin: 10px 0;">Expected Wait: 2-3 hours</div>
-                    <p style="font-size: 0.85rem;">We'll notify you as soon as a worker becomes available.</p>
-                `;
-
-                displayJobs();
-                showNotification('No workers available right now. Added to waitlist - expected wait: 2-3 hours');
-            } else {
-                const { error } = await db
-                    .from('jobs')
-                    .delete()
-                    .eq('id', Number(jobId));
-
-                if (error) {
-                    console.error('Delete error:', error);
-                    return;
-                }
-
+        }
                 timerDisplay.innerHTML = `
                     <h4><i class="fas fa-times-circle"></i> No Workers Available</h4>
                     <p>Unfortunately, no workers were available within the time limit. Please try again later.</p>
@@ -3175,9 +3154,70 @@ async function displayAvailableJobs() {
                 <i class="fas fa-clock"></i>
                 <span>Posted ${timePassed}</span>
             </div>
+                <div class="job-timer">
+        <i class="fas fa-clock"></i>
+        <span>Posted ${timePassed}</span>
+    </div>
+    <div class="job-actions">
+        <button class="btn btn-success accept-job" data-id="${job.id}">Accept Job</button>
+    </div>
+`;
         `;
         container.appendChild(card);
     });
+    document.querySelectorAll('.accept-job').forEach(btn => {
+    btn.addEventListener('click', function() {
+        acceptJob(this.getAttribute('data-id'));
+    });
+});
+}
+async function acceptJob(jobId) {
+    if (!confirm('Accept this job? You will be assigned as the worker.')) return;
+
+    const { data: profile, error: profileError } = await db
+        .from('workers')
+        .select('full_name, phone, services, profile_photo_url, verification_status')
+        .eq('user_id', currentUser.id)
+        .single();
+
+    if (profileError || !profile || profile.verification_status !== 'approved') {
+        showNotification('You must be an approved worker to accept jobs.');
+        return;
+    }
+
+    const specialty = (profile.services || [])
+        .map(s => s.charAt(0).toUpperCase() + s.slice(1).replace('-', ' '))
+        .join(', ');
+
+    const assignedWorker = {
+        user_id: currentUser.id,
+        name: profile.full_name,
+        phone: profile.phone,
+        specialty: specialty,
+        photo: profile.profile_photo_url || 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+    };
+
+    const { data: updated, error } = await db
+        .from('jobs')
+        .update({ status: 'accepted', assigned_worker: assignedWorker })
+        .eq('id', Number(jobId))
+        .eq('status', 'searching')
+        .select();
+
+    if (error) {
+        console.error('Accept error:', error);
+        showNotification('Could not accept job: ' + error.message);
+        return;
+    }
+
+    if (!updated || updated.length === 0) {
+        showNotification('This job was already taken.');
+        displayAvailableJobs();
+        return;
+    }
+
+    showNotification('Job accepted! Contact the client for details.');
+    displayAvailableJobs();
 }
 
         function calculateTimePassed(postedAt) {
