@@ -3146,14 +3146,9 @@ async function displayAvailableJobs() {
                 <i class="fas fa-clock"></i>
                 <span>Posted ${timePassed}</span>
             </div>
-                <div class="job-timer">
-        <i class="fas fa-clock"></i>
-        <span>Posted ${timePassed}</span>
-    </div>
-    <div class="job-actions">
-        <button class="btn btn-success accept-job" data-id="${job.id}">Accept Job</button>
-    </div>
-`;
+             <div class="job-actions">
+            <button class="btn btn-success accept-job" data-id="${job.id}">Accept Job</button>
+            </div>
         `;
         container.appendChild(card);
     });
