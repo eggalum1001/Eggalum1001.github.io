@@ -3512,10 +3512,12 @@ function updateAuthUI(user) {
         loginBtn.style.display = 'none';
         signupBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
+        subscribeToJobUpdates();
     } else {
         loginBtn.style.display = '';
         signupBtn.style.display = '';
         logoutBtn.style.display = 'none';
+        unsubscribeFromJobUpdates();
     }
 }
 
@@ -3581,6 +3583,52 @@ logoutBtn.addEventListener('click', async function(e) {
     showNotification('Logged out.');
     displayJobs();
 });
+        // ==================== REAL-TIME JOB UPDATES ====================
+
+let jobsChannel = null;
+
+function subscribeToJobUpdates() {
+    if (!currentUser) return;
+    if (jobsChannel) return;
+
+    jobsChannel = db
+        .channel('jobs-changes')
+        .on(
+            'postgres_changes',
+            {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'jobs',
+                filter: `user_id=eq.${currentUser.id}`
+            },
+            function(payload) {
+                const updated = payload.new;
+                console.log('Real-time job update:', updated);
+
+                if (updated.status === 'accepted' && updated.assigned_worker) {
+                    showNotification(
+                        `${updated.assigned_worker.name} accepted your job: ${updated.title}`
+                    );
+                } else if (updated.status === 'completed') {
+                    showNotification(`Job completed: ${updated.title}`);
+                }
+
+                // Refresh the My Jobs tab if it's visible
+                const jobsTab = document.getElementById('jobs');
+                if (jobsTab && jobsTab.classList.contains('active')) {
+                    displayJobs();
+                }
+            }
+        )
+        .subscribe();
+}
+
+function unsubscribeFromJobUpdates() {
+    if (jobsChannel) {
+        db.removeChannel(jobsChannel);
+        jobsChannel = null;
+    }
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async function() {
