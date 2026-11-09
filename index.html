@@ -2088,7 +2088,8 @@ DOCTYPE html>
                 }
                 if (tabId === 'worker-dashboard') {
     displayAvailableJobs();
-}
+    displayMyAssignments();
+                }
             });
         });
 
@@ -3216,6 +3217,7 @@ async function acceptJob(jobId) {
 
     showNotification('Job accepted! Contact the client for details.');
     displayAvailableJobs();
+    displayMyAssignments();
 }
         async function displayMyAssignments() {
     const container = document.getElementById('myAssignmentsList');
