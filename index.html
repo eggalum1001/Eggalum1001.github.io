@@ -3206,6 +3206,7 @@ async function acceptJob(jobId) {
         showNotification('Could not accept job: ' + error.message);
         return;
     }
+    
 
     if (!updated || updated.length === 0) {
         showNotification('This job was already taken.');
@@ -3216,6 +3217,80 @@ async function acceptJob(jobId) {
     showNotification('Job accepted! Contact the client for details.');
     displayAvailableJobs();
 }
+        async function displayMyAssignments() {
+    const container = document.getElementById('myAssignmentsList');
+    if (!container || !currentUser) return;
+
+    container.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: var(--gray);">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; display: block;"></i>
+            <p>Loading your jobs...</p>
+        </div>
+    `;
+
+    const { data: jobs, error } = await db
+        .from('jobs')
+        .select('*')
+        .eq('status', 'accepted')
+        .filter('assigned_worker->>user_id', 'eq', currentUser.id)
+        .order('posted_at', { ascending: false });
+
+    if (error) {
+        console.error('My assignments error:', error);
+        container.innerHTML = `<p style="color: var(--danger); text-align: center;">Could not load your assignments.</p>`;
+        return;
+    }
+
+    if (!jobs || jobs.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-briefcase" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>No active jobs</h3>
+                <p>Accept a job from above to get started.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = '';
+    jobs.forEach(job => {
+        const timePassed = calculateTimePassed(job.posted_at);
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+            <div class="job-header">
+                <div class="job-title">${job.title}</div>
+                <div class="job-status ${job.status}">Accepted</div>
+            </div>
+            <div class="job-details">
+                <div class="job-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>${job.service.charAt(0).toUpperCase() + job.service.slice(1).replace('-', ' ')}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${job.location}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>$${job.budget}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-calendar"></i>
+                    <span>${job.date}</span>
+                </div>
+            </div>
+            <div class="job-description">
+                <p style="white-space: pre-line;">${job.description}</p>
+            </div>
+            <div class="job-timer">
+                <i class="fas fa-clock"></i>
+                <span>Posted ${timePassed}</span>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+        }
 
         function calculateTimePassed(postedAt) {
             const now = new Date();
