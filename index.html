@@ -1789,6 +1789,9 @@
                 <label for="loginPassword">Password</label>
                 <input type="password" id="loginPassword" class="form-control" required>
             </div>
+            <div style="text-align: right; margin-top: 10px;">
+    <a href="#" id="forgotPasswordLink" style="color: var(--primary); font-size: 0.9rem;">Forgot password?</a>
+            </div>
             <div id="loginResult"></div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary btn-block">Log In</button>
@@ -3663,6 +3666,31 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     updateAuthUI(data.user);
     showNotification('Logged in successfully.');
 });
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        
+        if (!email) {
+            showNotification('Please enter your email address first.');
+            return;
+        }
+
+        const { error } = await db.auth.resetPasswordForEmail(email, {
+            redirectTo: 'https://outfix.it.com/reset-password.html'
+        });
+
+        if (error) {
+            console.error('Reset error:', error);
+            showNotification('Error sending reset email: ' + error.message);
+        } else {
+            showNotification('Check your email for a password reset link.');
+            loginModal.style.display = 'none';
+        }
+    });
+}
 
 logoutBtn.addEventListener('click', async function(e) {
     e.preventDefault();
