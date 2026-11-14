@@ -3670,6 +3670,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
 if (forgotPasswordLink) {
     forgotPasswordLink.addEventListener('click', async function(e) {
+        console.log('Forgot password clicked');
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         
