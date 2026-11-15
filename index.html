@@ -2600,29 +2600,21 @@ const specificDateOption = document.getElementById('specificDateOption');
 const jobDateInput = document.getElementById('jobDate');
 let isAsap = true;
 
-specificDateOption.addEventListener('click', function() {
-    specificDateOption.classList.add('active');
-    asapOption.classList.remove('active');
-    jobDateInput.style.display = 'block';
-    jobDateInput.required = true;
-    document.getElementById('timeGroup').style.display = 'block';   // show time
-    document.getElementById('jobTime').required = true;
-    isAsap = false;
-});
-
 asapOption.addEventListener('click', function() {
     asapOption.classList.add('active');
     specificDateOption.classList.remove('active');
     jobDateInput.style.display = 'none';
     jobDateInput.required = false;
-    document.getElementById('timeGroup').style.display = 'none';    // hide time
-    document.getElementById('jobTime').required = false;
     isAsap = true;
 });
-        <div class="form-group" id="timeGroup" style="display: none;">
-    <label for="jobTime">Preferred Arrival Time</label>
-    <input type="time" id="jobTime" class="form-control">
-</div>
+
+specificDateOption.addEventListener('click', function() {
+    specificDateOption.classList.add('active');
+    asapOption.classList.remove('active');
+    jobDateInput.style.display = 'block';
+    jobDateInput.required = true;
+    isAsap = false;
+});
 
         // File upload preview
         const mediaUpload = document.getElementById('mediaUpload');
@@ -2676,7 +2668,6 @@ asapOption.addEventListener('click', function() {
                 workers: document.getElementById('workersNeeded').value,
                 location: document.getElementById('jobLocation').value,
                 date: isAsap ? 'ASAP' : document.getElementById('jobDate').value,
-                time: isAsap ? 'ASAP' : document.getElementById('jobTime').value,
                 allowCompanions: document.getElementById('allowCompanions').checked,
                 agreedToWaitlist: document.getElementById('agreeWaitlist').checked,
                 status: 'searching', // New status: searching for workers
@@ -2697,7 +2688,6 @@ const { data: insertedJob, error } = await db
         workers: Number(jobData.workers),
         location: jobData.location,
         date: jobData.date,
-        time: jobData.time,
         shared_code: jobData.sharedCode,
         status: jobData.status,
         posted_at: new Date().toISOString(),
@@ -3009,10 +2999,7 @@ const { data: jobs, error } = await db
                 <div class="job-detail">
                     <i class="fas fa-calendar"></i>
                     <span>${job.date}</span>
-                </div><div class="job-detail">
-    <i class="fas fa-clock"></i>
-    <span>${job.time || 'Flexible'}</span>
-</div>
+                </div>
             </div>
             ${workerSection}
             ${waitlistSection}
@@ -3172,10 +3159,6 @@ async function displayAvailableJobs() {
                     <i class="fas fa-calendar"></i>
                     <span>${job.date}</span>
                 </div>
-                <div class="job-detail">
-    <i class="fas fa-clock"></i>
-    <span>${job.time || 'Flexible'}</span>
-</div>
             </div>
             <div class="job-description">
                 <p style="white-space: pre-line;">${job.description}</p>
