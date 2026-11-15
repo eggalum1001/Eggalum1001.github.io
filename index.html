@@ -1442,6 +1442,10 @@
             <i class="fas fa-calendar-alt"></i>
             <p>Pick a Date</p>
         </div>
+        <div class="form-group" id="timeGroup" style="display: none;">
+    <label for="jobTime">Preferred Arrival Time</label>
+    <input type="time" id="jobTime" class="form-control">
+        </div>
     </div>
     <input type="date" id="jobDate" class="form-control" style="display: none;">
 </div>
@@ -2600,20 +2604,24 @@ const specificDateOption = document.getElementById('specificDateOption');
 const jobDateInput = document.getElementById('jobDate');
 let isAsap = true;
 
-asapOption.addEventListener('click', function() {
-    asapOption.classList.add('active');
-    specificDateOption.classList.remove('active');
-    jobDateInput.style.display = 'none';
-    jobDateInput.required = false;
-    isAsap = true;
-});
-
 specificDateOption.addEventListener('click', function() {
     specificDateOption.classList.add('active');
     asapOption.classList.remove('active');
     jobDateInput.style.display = 'block';
     jobDateInput.required = true;
+    document.getElementById('timeGroup').style.display = 'block';   // show time
+    document.getElementById('jobTime').required = true;
     isAsap = false;
+});
+
+asapOption.addEventListener('click', function() {
+    asapOption.classList.add('active');
+    specificDateOption.classList.remove('active');
+    jobDateInput.style.display = 'none';
+    jobDateInput.required = false;
+    document.getElementById('timeGroup').style.display = 'none';    // hide time
+    document.getElementById('jobTime').required = false;
+    isAsap = true;
 });
 
         // File upload preview
@@ -2668,6 +2676,7 @@ specificDateOption.addEventListener('click', function() {
                 workers: document.getElementById('workersNeeded').value,
                 location: document.getElementById('jobLocation').value,
                 date: isAsap ? 'ASAP' : document.getElementById('jobDate').value,
+                time: isAsap ? 'ASAP' : document.getElementById('jobTime').value,
                 allowCompanions: document.getElementById('allowCompanions').checked,
                 agreedToWaitlist: document.getElementById('agreeWaitlist').checked,
                 status: 'searching', // New status: searching for workers
@@ -2688,6 +2697,7 @@ const { data: insertedJob, error } = await db
         workers: Number(jobData.workers),
         location: jobData.location,
         date: jobData.date,
+        time: jobData.sharedCode,
         shared_code: jobData.sharedCode,
         status: jobData.status,
         posted_at: new Date().toISOString(),
