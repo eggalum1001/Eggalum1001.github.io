@@ -3306,9 +3306,13 @@ async function acceptJob(jobId) {
                     <span>$${job.budget}</span>
                 </div>
                 <div class="job-detail">
-                    <i class="fas fa-calendar"></i>
-                    <span>${job.date}</span>
-                </div>
+                <i class="fas fa-calendar"></i>
+                <span>${job.date}</span>
+               </div>
+               <div class="job-detail">
+               <i class="fas fa-clock"></i>
+               <span>${job.time || 'Flexible'}</span>
+              </div>
             </div>
             <div class="job-description">
                 <p style="white-space: pre-line;">${job.description}</p>
