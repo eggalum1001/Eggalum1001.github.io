@@ -3279,6 +3279,14 @@ async function acceptJob(jobId) {
         container.innerHTML = `<p style="color: var(--danger); text-align: center;">Could not load your assignments.</p>`;
         return;
     }
+            // Fetch codes for the worker's accepted jobs
+const jobIds = (jobs || []).map(j => j.id);
+const { data: codes } = await db
+    .from('codes')
+    .select('job_id, code')
+    .in('job_id', jobIds);
+const codeMap = {};
+(codes || []).forEach(c => { codeMap[c.job_id] = c.code; });
 
     if (!jobs || jobs.length === 0) {
         container.innerHTML = `
@@ -3330,6 +3338,17 @@ async function acceptJob(jobId) {
                 <i class="fas fa-clock"></i>
                 <span>Posted ${timePassed}</span>
             </div>
+            <div class="job-timer">
+    <i class="fas fa-clock"></i>
+    <span>Posted ${timePassed}</span>
+</div>
+${codeMap[job.id] ? `
+<div class="shared-code-box" style="padding: 15px; margin: 15px 0;">
+    <h3 style="font-size: 0.8rem;">Verification Code</h3>
+    <div class="shared-code" style="font-size: 1.8rem; letter-spacing: 5px; padding: 10px; margin: 10px 0;">${codeMap[job.id]}</div>
+    <p class="shared-code-hint" style="font-size: 0.8rem;">Show this to the client on arrival</p>
+</div>
+` : ''}
         `;
         container.appendChild(card);
     });
