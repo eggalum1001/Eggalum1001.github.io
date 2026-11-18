@@ -2698,7 +2698,6 @@ const { data: insertedJob, error } = await db
         location: jobData.location,
         date: jobData.date,
         time: jobData.time,
-        shared_code: jobData.sharedCode,
         status: jobData.status,
         posted_at: new Date().toISOString(),
         user_id: currentUser.id
@@ -2923,6 +2922,15 @@ const { data: jobs, error } = await db
         jobsList.innerHTML = `<p style="color: var(--danger);">Could not load jobs.</p>`;
         return;
     }
+    // Fetch codes for the current user's jobs (RLS already restricts to owner)
+const jobIds = (jobs || []).map(j => j.id);
+const { data: codes, error: codesError } = await db
+    .from('codes')
+    .select('job_id, code')
+    .in('job_id', jobIds);
+
+const codeMap = {};
+(codes || []).forEach(c => { codeMap[c.job_id] = c.code; });
 
     if (!jobs || jobs.length === 0) {
         jobsList.innerHTML = `
@@ -2969,16 +2977,17 @@ const { data: jobs, error } = await db
             `;
         }
 
-        let codeSection = '';
-        if (job.shared_code && job.status !== 'completed' && job.status !== 'waitlisted') {
-            codeSection = `
-                <div class="shared-code-box" style="padding: 15px; margin: 15px 0;">
-                    <h3 style="font-size: 0.8rem;">Your Job Code</h3>
-                    <div class="shared-code" style="font-size: 1.8rem; letter-spacing: 5px; padding: 10px; margin: 10px 0;">${job.shared_code}</div>
-                    <p class="shared-code-hint" style="font-size: 0.8rem;">Share with your worker for verification</p>
-                </div>
-            `;
-        }
+        const jobCode = codeMap[job.id];
+let codeSection = '';
+if (jobCode && job.status !== 'completed' && job.status !== 'waitlisted') {
+    codeSection = `
+        <div class="shared-code-box" style="padding: 15px; margin: 15px 0;">
+            <h3 style="font-size: 0.8rem;">Your Job Code</h3>
+            <div class="shared-code" style="font-size: 1.8rem; letter-spacing: 5px; padding: 10px; margin: 10px 0;">${jobCode}</div>
+            <p class="shared-code-hint" style="font-size: 0.8rem;">Share with your worker for verification</p>
+        </div>
+    `;
+}
 
         const statusDisplay = job.status === 'searching'
             ? 'Searching'
