@@ -2847,8 +2847,108 @@ if (codeError) console.error('Code insert error:', codeError);
         }
         
         // ==================== CODE MODAL ====================
+
+        // ==================== CANCELLATION FLOW ====================
+
+const cancelJobModal = document.getElementById('cancelJobModal');
+const cancelJobForm = document.getElementById('cancelJobForm');
+const cancelReasonSelect = document.getElementById('cancelReason');
+const cancelNotesGroup = document.getElementById('cancelNotesGroup');
+const cancelNotes = document.getElementById('cancelNotes');
+const cancelFeeBox = document.getElementById('cancelFeeBox');
+const cancelFeeText = document.getElementById('cancelFeeText');
+const cancelIntro = document.getElementById('cancelIntro');
+
+let jobBeingCancelled = null;   // { id, budget, status, role }
+let cancellationFeeCents = 0;
+
+const CLIENT_CANCEL_REASONS = [
+    { value: 'found_another_worker', label: 'Found another worker' },
+    { value: 'no_longer_needed', label: 'No longer needed' },
+    { value: 'worker_unresponsive', label: 'Worker is unresponsive' },
+    { value: 'worker_late', label: 'Worker is late / no-show' },
+    { value: 'price_too_high', label: 'Price is too high' },
+    { value: 'other', label: 'Other (explain below)' }
+];
+
+const WORKER_CANCEL_REASONS = [
+    { value: 'cannot_reach_client', label: 'Cannot reach the client' },
+    { value: 'wrong_address', label: 'Address is wrong or inaccessible' },
+    { value: 'unsafe_conditions', label: 'Unsafe working conditions' },
+    { value: 'job_mismatch', label: 'Job is different from what was described' },
+    { value: 'emergency', label: 'Personal emergency' },
+    { value: 'other', label: 'Other (explain below)' }
+];
+
+function calculateCancellationFee(budget, role, status) {
+    // No fee unless a worker is already committed
+    if (status !== 'accepted') return 0;
+    // Workers aren't charged — they're already losing income
+    if (role === 'worker') return 0;
+
+    // Client cancelling an accepted job: 10% of budget, min $5, max $25
+    const raw = Math.round(budget * 0.10);
+    return Math.max(5, Math.min(25, raw));
+}
+
+function openCancelModal(job, role) {
+    jobBeingCancelled = { id: job.id, budget: job.budget, status: job.status, role: role };
+    cancellationFeeCents = calculateCancellationFee(job.budget, role, job.status);
+
+    // Intro text
+    cancelIntro.textContent = role === 'client'
+        ? `Cancelling "${job.title}". ${job.status === 'accepted' ? 'A worker has already accepted this job.' : 'No worker has accepted yet.'}`
+        : `Cancelling your accepted job "${job.title}".`;
+
+    // Populate reasons
+    const reasons = role === 'client' ? CLIENT_CANCEL_REASONS : WORKER_CANCEL_REASONS;
+    cancelReasonSelect.innerHTML = reasons
+        .map(r => `<option value="${r.value}">${r.label}</option>`)
+        .join('');
+
+    // Hide notes until "Other" is picked
+    cancelNotesGroup.style.display = 'none';
+    cancelNotes.value = '';
+    cancelNotes.required = false;
+
+    // Show/hide fee
+    if (cancellationFeeCents > 0) {
+        cancelFeeBox.style.display = 'block';
+        cancelFeeText.innerHTML = `A cancellation fee of <strong>$${cancellationFeeCents}</strong> will be recorded. This compensates the worker for their committed time.`;
+    } else if (role === 'client' && job.status !== 'accepted') {
+        cancelFeeBox.style.display = 'block';
+        cancelFeeText.innerHTML = 'No fee — no worker had accepted yet.';
+    } else {
+        cancelFeeBox.style.display = 'none';
+    }
+
+    cancelJobModal.style.display = 'block';
+}
+
+function closeCancelModal() {
+    cancelJobModal.style.display = 'none';
+    jobBeingCancelled = null;
+    cancellationFeeCents = 0;
+    cancelJobForm.reset();
+}
+
+// Show "Please explain" when "other" is selected
+cancelReasonSelect.addEventListener('change', function() {
+    const isOther = this.value === 'other';
+    cancelNotesGroup.style.display = isOther ? 'block' : 'none';
+    cancelNotes.required = isOther;
+});
+
+// Dismiss button
+document.getElementById('cancelJobBtnDismiss').addEventListener('click', closeCancelModal);
+document.querySelector('.close-cancel-modal').addEventListener('click', closeCancelModal);
+
+// Click outside to close
+window.addEventListener('click', function(e) {
+    if (e.target === cancelJobModal) closeCancelModal();
+});
         
-        document.querySelector('.close-code-modal').addEventListener('click', function() {
+document.querySelector('.close-code-modal').addEventListener('click', function() {
             document.getElementById('codeModal').style.display = 'none';
             document.getElementById('searchingTimer').style.display = 'none';
         });
