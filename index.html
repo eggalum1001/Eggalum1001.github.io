@@ -2914,7 +2914,7 @@ function openCancelModal(job, role) {
     // Show/hide fee
     if (cancellationFeeCents > 0) {
         cancelFeeBox.style.display = 'block';
-        cancelFeeText.innerHTML = `A cancellation fee of <strong>$${cancellationFeeCents}</strong> will be recorded. This compensates the worker for their committed time.`;
+        cancelFeeText.innerHTML = `A cancellation fee of <strong>J$${cancellationFeeCents.toLocaleString()}</strong> will be recorded. This compensates the worker for their committed time.`;
     } else if (role === 'client' && job.status !== 'accepted') {
         cancelFeeBox.style.display = 'block';
         cancelFeeText.innerHTML = 'No fee — no worker had accepted yet.';
