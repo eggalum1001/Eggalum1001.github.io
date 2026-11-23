@@ -2888,7 +2888,7 @@ function calculateCancellationFee(budget, role, status) {
 
     // Client cancelling an accepted job: 10% of budget, min J$500, max J$3,000
 const raw = Math.round(budget * 0.10);
-return Math.max(J$500, Math.min(J$3000, raw));
+return Math.max(500, Math.min(3000, raw));
 }
 
 function openCancelModal(job, role) {
