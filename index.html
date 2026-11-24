@@ -2947,53 +2947,6 @@ document.querySelector('.close-cancel-modal').addEventListener('click', closeCan
 window.addEventListener('click', function(e) {
     if (e.target === cancelJobModal) closeCancelModal();
 });
-        // Submit the cancellation
-cancelJobForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (!jobBeingCancelled) return;
-
-    const reason = cancelReasonSelect.value;
-    const notes = reason === 'other' ? cancelNotes.value.trim() : null;
-    const { id, role } = jobBeingCancelled;
-    const fee = cancellationFeeCents;
-
-    const confirmBtn = this.querySelector('button[type="submit"]');
-    const originalText = confirmBtn.textContent;
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = 'Cancelling...';
-
-    const { error } = await db
-        .from('jobs')
-        .update({
-            status: 'cancelled',
-            cancelled_by: role,
-            cancellation_reason: reason,
-            cancellation_notes: notes,
-            cancellation_fee: fee,
-            cancelled_at: new Date().toISOString()
-        })
-        .eq('id', Number(id));
-
-    confirmBtn.disabled = false;
-    confirmBtn.textContent = originalText;
-
-    if (error) {
-        console.error('Cancel error:', error);
-        showNotification('Could not cancel job: ' + error.message);
-        return;
-    }
-
-    closeCancelModal();
-    showNotification(
-        'Job cancelled.' + (fee > 0 ? ` A fee of J$${fee.toLocaleString()} has been recorded.` : '')
-    );
-
-    if (document.getElementById('jobs').classList.contains('active')) displayJobs();
-    if (document.getElementById('worker-dashboard').classList.contains('active')) {
-        displayAvailableJobs();
-        displayMyAssignments();
-    }
-});
         
 document.querySelector('.close-code-modal').addEventListener('click', function() {
             document.getElementById('codeModal').style.display = 'none';
@@ -3228,12 +3181,10 @@ if (jobCode && job.status !== 'completed' && job.status !== 'waitlisted') {
         jobsList.appendChild(jobCard);
     });
     document.querySelectorAll('.cancel-job').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const jobId = this.getAttribute('data-id');
-        const job = jobs.find(j => j.id == jobId);
-        if (job) openCancelModal(job, 'client');
+        btn.addEventListener('click', function() {
+            cancelJob(this.getAttribute('data-id'));
+        });
     });
-});
 
     document.querySelectorAll('.complete-job').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -3438,13 +3389,6 @@ async function acceptJob(jobId) {
     showNotification('Job accepted! Contact the client for details.');
     displayAvailableJobs();
     displayMyAssignments();
-    document.querySelectorAll('.worker-cancel-job').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const jobId = this.getAttribute('data-id');
-        const job = jobs.find(j => j.id == jobId);
-        if (job) openCancelModal(job, 'worker');
-    });
-});
 }
         async function displayMyAssignments() {
     const container = document.getElementById('myAssignmentsList');
@@ -3535,9 +3479,6 @@ ${codeMap[job.id] ? `
     <p class="shared-code-hint" style="font-size: 0.8rem;">Show this to the client on arrival</p>
 </div>
 ` : ''}
-<div class="job-actions">
-    <button class="btn btn-danger worker-cancel-job" data-id="${job.id}">Cancel Job</button>
-</div>
         `;
         container.appendChild(card);
     });
@@ -3974,13 +3915,6 @@ function subscribeToJobUpdates() {
                 } else if (updated.status === 'completed') {
                     showNotification(`Job completed: ${updated.title}`);
                 }
-                } else if (updated.status === 'cancelled') {
-    if (updated.cancelled_by === 'worker') {
-        showNotification(`The worker cancelled your job: ${updated.title}`);
-    } else {
-        showNotification(`Job cancelled: ${updated.title}`);
-    }
-    }
 
                 // Refresh the My Jobs tab if it's visible
                 const jobsTab = document.getElementById('jobs');
