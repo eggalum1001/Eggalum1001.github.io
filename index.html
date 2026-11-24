@@ -1451,7 +1451,7 @@
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="budget">Your Budget ($)</label>
+                        <label for="budget">Your Budget (JMD)</label>
                         <input type="number" id="budget" class="form-control" min="1" required>
                     </div>
                     <div class="form-group">
@@ -3143,7 +3143,7 @@ if (jobCode && job.status !== 'completed' && job.status !== 'waitlisted') {
                 </div>
                 <div class="job-detail">
                     <i class="fas fa-dollar-sign"></i>
-                    <span>$${job.budget}</span>
+                    <span>J$${job.budget.toLocaleString()}</span>
                 </div>
                 <div class="job-detail">
                     <i class="fas fa-users"></i>
@@ -3306,7 +3306,7 @@ async function displayAvailableJobs() {
                 </div>
                 <div class="job-detail">
                     <i class="fas fa-dollar-sign"></i>
-                    <span>$${job.budget}</span>
+                    <span>J$${job.budget.toLocaleString()}</span>
                 </div>
                 <div class="job-detail">
                     <i class="fas fa-users"></i>
@@ -3454,7 +3454,7 @@ const codeMap = {};
                 </div>
                 <div class="job-detail">
                     <i class="fas fa-dollar-sign"></i>
-                    <span>$${job.budget}</span>
+                    <span>J$${job.budget.toLocaleString()}</span>
                 </div>
                 <div class="job-detail">
                 <i class="fas fa-calendar"></i>
