@@ -3534,7 +3534,7 @@ ${codeMap[job.id] ? `
         `;
         container.appendChild(card);
     });
-        }
+        
 document.querySelectorAll('.worker-cancel-job').forEach(btn => {
     btn.addEventListener('click', function() {
         const jobId = this.getAttribute('data-id');
@@ -3542,6 +3542,7 @@ document.querySelectorAll('.worker-cancel-job').forEach(btn => {
         if (job) openCancelModal(job, 'worker');
     });
 });
+        }
         function calculateTimePassed(postedAt) {
             const now = new Date();
             const posted = new Date(postedAt);
