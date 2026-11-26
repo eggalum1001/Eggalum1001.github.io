@@ -3535,7 +3535,13 @@ ${codeMap[job.id] ? `
         container.appendChild(card);
     });
         }
-
+document.querySelectorAll('.worker-cancel-job').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const jobId = this.getAttribute('data-id');
+        const job = jobs.find(j => j.id == jobId);
+        if (job) openCancelModal(job, 'worker');
+    });
+});
         function calculateTimePassed(postedAt) {
             const now = new Date();
             const posted = new Date(postedAt);
