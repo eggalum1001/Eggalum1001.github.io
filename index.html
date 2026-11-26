@@ -2965,6 +2965,53 @@ document.querySelector('.close-code-modal').addEventListener('click', function()
         document.getElementById('printCodeBtn').addEventListener('click', function() {
             window.print();
         });
+        // Submit the cancellation
+cancelJobForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!jobBeingCancelled) return;
+
+    const reason = cancelReasonSelect.value;
+    const notes = reason === 'other' ? cancelNotes.value.trim() : null;
+    const { id, role } = jobBeingCancelled;
+    const fee = cancellationFeeCents;
+
+    const confirmBtn = this.querySelector('button[type="submit"]');
+    const originalText = confirmBtn.textContent;
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Cancelling...';
+
+    const { error } = await db
+        .from('jobs')
+        .update({
+            status: 'cancelled',
+            cancelled_by: role,
+            cancellation_reason: reason,
+            cancellation_notes: notes,
+            cancellation_fee: fee,
+            cancelled_at: new Date().toISOString()
+        })
+        .eq('id', Number(id));
+
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = originalText;
+
+    if (error) {
+        console.error('Cancel error:', error);
+        showNotification('Could not cancel job: ' + error.message);
+        return;
+    }
+
+    closeCancelModal();
+    showNotification(
+        'Job cancelled.' + (fee > 0 ? ` A fee of J$${fee.toLocaleString()} has been recorded.` : '')
+    );
+
+    if (document.getElementById('jobs').classList.contains('active')) displayJobs();
+    if (document.getElementById('worker-dashboard').classList.contains('active')) {
+        displayAvailableJobs();
+        displayMyAssignments();
+    }
+});
 
         // ==================== VERIFY WORKER ====================
         
