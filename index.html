@@ -980,7 +980,7 @@
             background-color: #d4edda;
             color: #155724;
         }
-        
+
         .job-status.waitlisted {
             background-color: #ffeaa7;
             color: #856404;
@@ -3974,13 +3974,6 @@ function subscribeToJobUpdates() {
                 } else if (updated.status === 'completed') {
                     showNotification(`Job completed: ${updated.title}`);
                 }
-                } else if (updated.status === 'cancelled') {
-    if (updated.cancelled_by === 'worker') {
-        showNotification(`The worker cancelled your job: ${updated.title}`);
-    } else {
-        showNotification(`Job cancelled: ${updated.title}`);
-    }
-    }
 
                 // Refresh the My Jobs tab if it's visible
                 const jobsTab = document.getElementById('jobs');
