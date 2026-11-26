@@ -3528,6 +3528,9 @@ ${codeMap[job.id] ? `
     <p class="shared-code-hint" style="font-size: 0.8rem;">Show this to the client on arrival</p>
 </div>
 ` : ''}
+<div class="job-actions">
+    <button class="btn btn-danger worker-cancel-job" data-id="${job.id}">Cancel Job</button>
+</div>
         `;
         container.appendChild(card);
     });
