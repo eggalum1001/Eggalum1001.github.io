@@ -3228,10 +3228,12 @@ if (jobCode && job.status !== 'completed' && job.status !== 'waitlisted') {
         jobsList.appendChild(jobCard);
     });
     document.querySelectorAll('.cancel-job').forEach(btn => {
-        btn.addEventListener('click', function() {
-            cancelJob(this.getAttribute('data-id'));
-        });
+    btn.addEventListener('click', function() {
+        const jobId = this.getAttribute('data-id');
+        const job = jobs.find(j => j.id == jobId);
+        if (job) openCancelModal(job, 'client');
     });
+});
 
     document.querySelectorAll('.complete-job').forEach(btn => {
         btn.addEventListener('click', function() {
