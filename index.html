@@ -3603,6 +3603,60 @@ console.log('Deleted rows:', deletedRows, 'Error:', error);
                 showNotification('Removed from waitlist');
             }
         }
+        async function relistJob(jobId) {
+    if (!confirm('Relist this job? A new job will be posted with the same details and a fresh verification code.')) return;
+
+    const { data: originalJob, error: fetchError } = await db
+        .from('jobs')
+        .select('*')
+        .eq('id', Number(jobId))
+        .single();
+
+    if (fetchError || !originalJob) {
+        console.error('Relist fetch error:', fetchError);
+        showNotification('Could not find the original job.');
+        return;
+    }
+
+    const newCode = generateSharedCode();
+
+    const { data: newJob, error: insertError } = await db
+        .from('jobs')
+        .insert([{
+            title: originalJob.title,
+            service: originalJob.service,
+            description: originalJob.description,
+            budget: originalJob.budget,
+            workers: originalJob.workers,
+            location: originalJob.location,
+            date: originalJob.date,
+            time: originalJob.time,
+            status: 'searching',
+            posted_at: new Date().toISOString(),
+            user_id: currentUser.id
+        }])
+        .select()
+        .single();
+
+    if (insertError) {
+        console.error('Relist insert error:', insertError);
+        showNotification('Could not relist job: ' + insertError.message);
+        return;
+    }
+
+    const { error: codeError } = await db.from('codes').insert([{
+        job_id: newJob.id,
+        code: newCode,
+        job_title: newJob.title,
+        client_location: newJob.location,
+        user_id: currentUser.id
+    }]);
+
+    if (codeError) console.error('Relist code error:', codeError);
+
+    showNotification(`Job relisted! New verification code: ${newCode}`);
+    displayJobs();
+        }
 
         async function completeJob(jobId) {
     const { error } = await db
