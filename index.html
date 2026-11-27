@@ -3568,6 +3568,79 @@ document.querySelectorAll('.worker-cancel-job').forEach(btn => {
     });
 });
         }
+        async function displayMyHistory() {
+    const container = document.getElementById('myHistoryList');
+    if (!container || !currentUser) return;
+
+    const { data: jobs, error } = await db
+        .from('jobs')
+        .select('*')
+        .in('status', ['completed', 'cancelled'])
+        .filter('assigned_worker->>user_id', 'eq', currentUser.id)
+        .order('posted_at', { ascending: false });
+
+    if (error) {
+        console.error('History fetch error:', error);
+        container.innerHTML = `<p style="color: var(--danger); text-align: center;">Could not load history.</p>`;
+        return;
+    }
+
+    if (!jobs || jobs.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-history" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                <h3>No history yet</h3>
+                <p>Completed and cancelled jobs will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = '';
+
+    jobs.forEach(job => {
+        const timePassed = calculateTimePassed(job.posted_at);
+        const statusLabel = job.status === 'completed' ? 'Completed' : 'Cancelled';
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+            <div class="job-header">
+                <div class="job-title">${job.title}</div>
+                <div class="job-status ${job.status}">${statusLabel}</div>
+            </div>
+            <div class="job-details">
+                <div class="job-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>${job.service.charAt(0).toUpperCase() + job.service.slice(1).replace('-', ' ')}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${job.location}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>J$${job.budget.toLocaleString()}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-calendar"></i>
+                    <span>${job.date}</span>
+                </div>
+                <div class="job-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>${job.time || 'Flexible'}</span>
+                </div>
+            </div>
+            <div class="job-description">
+                <p style="white-space: pre-line;">${job.description}</p>
+            </div>
+            <div class="job-timer">
+                <i class="fas fa-clock"></i>
+                <span>Posted ${timePassed}</span>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+        }
         function calculateTimePassed(postedAt) {
             const now = new Date();
             const posted = new Date(postedAt);
