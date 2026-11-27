@@ -2154,6 +2154,7 @@
                 if (tabId === 'worker-dashboard') {
     displayAvailableJobs();
     displayMyAssignments();
+    displayMyHistory();
                 }
             });
         });
@@ -3027,6 +3028,7 @@ cancelJobForm.addEventListener('submit', async function(e) {
     if (document.getElementById('worker-dashboard').classList.contains('active')) {
         displayAvailableJobs();
         displayMyAssignments();
+        displayMyHistory();
     }
 });
 
@@ -3762,8 +3764,13 @@ console.log('Deleted rows:', deletedRows, 'Error:', error);
         return;
     }
 
-    displayJobs();
+        displayJobs();
+    if (document.getElementById('worker-dashboard').classList.contains('active')) {
+        displayMyAssignments();
+        displayMyHistory();
+    }
     showNotification('Job marked as completed.');
+        }
         }
 
         // ==================== NOTIFICATIONS ====================
