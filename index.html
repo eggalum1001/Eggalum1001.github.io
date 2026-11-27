@@ -3221,12 +3221,15 @@ if (jobCode && job.status !== 'completed' && job.status !== 'waitlisted') {
                 <i class="fas fa-clock"></i>
                 <span>Posted ${timePassed}</span>
             </div>
-            <div class="job-actions">
+<div class="job-actions">
     ${job.status === 'searching' ? `
         <button class="btn btn-danger cancel-job" data-id="${job.id}">Cancel</button>
     ` : ''}
     ${job.status === 'accepted' ? `
         <button class="btn btn-success complete-job" data-id="${job.id}">Mark Complete</button>
+    ` : ''}
+    ${job.status === 'cancelled' ? `
+        <button class="btn btn-primary relist-job" data-id="${job.id}">Relist Job</button>
     ` : ''}
 </div>
         `;
