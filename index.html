@@ -3236,6 +3236,11 @@ if (jobCode && job.status !== 'completed' && job.status !== 'waitlisted') {
 
         jobsList.appendChild(jobCard);
     });
+    document.querySelectorAll('.relist-job').forEach(btn => {
+    btn.addEventListener('click', function() {
+        relistJob(this.getAttribute('data-id'));
+    });
+});
     document.querySelectorAll('.cancel-job').forEach(btn => {
     btn.addEventListener('click', function() {
         const jobId = this.getAttribute('data-id');
