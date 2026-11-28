@@ -2793,6 +2793,17 @@ const { error: codeError } = await db.from('codes').insert([{
     user_id: currentUser.id
 }]);
 if (codeError) console.error('Code insert error:', codeError);
+            // Save client contact info (RLS: only the client who owns the job can insert)
+const { error: contactError } = await db.from('job_contacts').insert([{
+    job_id: jobId,
+    client_name: document.getElementById('clientName').value.trim(),
+    client_phone: document.getElementById('clientPhone').value.trim()
+}]);
+
+if (contactError) {
+    console.error('Contact insert error:', contactError);
+    showNotification('Job posted, but contact info failed to save. Please try again.');
+}
             // Reset form and show code modal
             jobForm.reset();
             modal.style.display = 'none';
